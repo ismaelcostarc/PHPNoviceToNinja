@@ -4,6 +4,7 @@ Sistema desenvolvido durante a leitura do livro [PHP Novice To Ninja](https://ww
 
 Nesse projeto foi utilizado o Apache 2 como servidor web, MySQL como servidor de Banco de Dados e PHP 7.4. Para o frontend foi utilizado o framework Bulma.
 
+Aplicação web hospedada no 000webhost: [https://recursoslivres.000webhostapp.com/](https://recursoslivres.000webhostapp.com/)
 # Sintaxe do PHP
 
 PHP é uma linguagem que roda dentro de um servidor web. Ao receber uma requisição HTTP o servidor web irá verificar os arquivos dentro da sua pasta pública (nesse caso `public_html`), se houver um arquivo `index.php`, ele será executado pelo interpretador PHP. Dentro de scripts, o código a ser executado está contido dentro do bloco `<?php ?>`. O que estiver fora desse bloco será enviado como `html` para o servidor.

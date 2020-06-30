@@ -12,8 +12,8 @@
 <body>
 <header class="hero is-primary">
     <div class="hero-body">
-        <h1 class="title">Web Livre</h1>
-        <h2 class="subtitle">Recursos gratuitos para estudantes de Desenvolvimento Web</h2>
+        <h1 class="title">Recursos Livres</h1>
+        <h2 class="subtitle">Material gratuito para estudantes de Desenvolvimento Web</h2>
     </div>
 </header>
 
