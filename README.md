@@ -2,7 +2,7 @@
 
 Sistema desenvolvido durante a leitura do livro [PHP Novice To Ninja](https://www.amazon.com/PHP-MySQL-Novice-Ninja-Speed/dp/0994346980), com anotações e dicas retiradas do livro.  
 
-Nesse projeto foi utilizado o Apache 2 como servidor web, MySQL como servidor de Banco de Dados e PHP 7.4.
+Nesse projeto foi utilizado o Apache 2 como servidor web, MySQL como servidor de Banco de Dados e PHP 7.4. Para o frontend foi utilizado o framework Bulma.
 
 # Sintaxe do PHP
 
@@ -60,6 +60,18 @@ Os comandos de looping em PHP também são similares a outras linguagens:
 - for
 - while
 - do ... while
+
+PHP possui o comando de loop foreach em duas formas:  
+
+```PHP
+foreach($array as $elemento) {
+    //código
+}
+
+foreach($chave => $valor) {
+    //código
+}
+```
 
 ## Arrays
 
@@ -226,3 +238,150 @@ include __DIR__ . '/../templates/count.html.php';
 >Um script PHP que receba requisições HTTP e escolha qual template utilizar é chamado **Controller**. É uma boa prática arquitetural utilizar apenas um Controlador na pasta pública, que será chamado de **Front Controller**.
 
 # Banco de Dados
+
+Existem 3 formas de conectar uma aplicação PHP a um Banco de Dados MySQL:
+
+- A Biblioteca MySQL;
+- A Biblioteca MySQLi;
+- A Biblioteca PDO.
+
+A biblioteca MySQL já está depreciada e não deve ser utilizada. A Biblioteca PDO tem se tornado mais comum, pois permite a conexão com qualquer banco de dados, não somente com MySQL. Para realizar a conexão com o servidor de banco de dados MySQL:
+
+```PHP
+$pdo = new PDO('mysql:host=localhost;dbname=databasename;charset=utf8','user','password');
+```
+
+>É importante dizer ao PHP qual codificação utilizar ao enviar dados ao banco de dados, por isso é importante inserir `charset=utf8`, ou ele utilizará codificações mais básicas como ISO-8859-1 (ou Latin-1).
+
+É possível realizar todas as operações com o banco de dados a partir dos métodos do objeto `$pdo`.
+
+## Tratamento de exceções
+
+Se não for possível realizar a conexão com o banco de dados ou alguma operação falhar será lançada uma exceção. Além de não ser visualmente agradável para o usuário, uma exceção não capturada pode acabar exibindo informações sensíveis sobre o sistema, como senhas. Então **toda** exceção deve ser capturada. A captura de exceções em PHP é similar a Java:
+
+```PHP
+try {
+// do something risky
+}
+catch (ExceptionType $e) {
+// handle the exception
+}
+```
+A exceção lançada por pelo PDO é do tipo PDOExpection. Logo a conexão com o banco de dados fica da seguinte maneira:  
+
+```PHP
+try {
+    $pdo = new PDO('mysql:host=localhost;dbname=databasename;charset=utf8','user','password');
+    $output = 'Database connection established.';
+}
+catch (PDOException $e) {
+    $output = 'Unable to connect to the database server.';
+}
+```
+Quando uma exceção é lançada o bloco try é imediatamente interrompido, e o script passa a executar o bloco catch.
+
+# Orientação a Objetos em PHP
+
+PHP suporta tanto programação procedural quanto orientada a objetos. Objetos são criados em PHP com o uso da palavra reservada new. É possível acessar suas propriedades e métodos com o urso da seta (->).
+
+```PHP
+$objeto = new ClasseDoObjeto();
+$objeto->propriedade = valor;
+$objeto->metodo();
+```
+
+>Após conectar com sucesso ao banco de dados, o objeto $pdo possui o comportamento padrão de não lançar mais exceções. É bom que todos os erros lancem exceções para facilitar encontrar e corrigir erros. É preciso usar o seguinte método do objeto $pdo:
+
+```PHP
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+``` 
+
+`PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION` são constantes da classe PDO. 
+
+A exceção PDOException possui métodos interessantes para o ambiente de desenvolvimento (**Dados sobres os erros e exceções lançados não devem aparecer em ambiente de Produção**). Por exemplo:
+
+```PHP
+catch(PDOException $e) {
+    echo $e->getMessage();    //Mostra a mensagem de erro da exceção
+    echo $e->getFile();       //Mostra em qual arquivo ocorreu o erro
+    echo $e->getLine();       //Mostra a linha do erro
+}
+```
+
+>É possível forçar a desconexão com o banco de dados com o seguinte comando `$pdo = null`, porém geralmente não é necessário, já que o PHP automaticamente encerra a conexão no fim do script.
+
+# Enviando Queries para o Banco de Dados
+
+É possível executar comandos SQL com o método `exec`, que retorna o número de linhas afetadas. Logo o código completo para uma consulta fica:
+
+```PHP
+try {
+    $pdo = new PDO('mysql:host=localhost;dbname=database;charset=utf8', 'user', 'password');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $sql = 'UPDATE joke SET jokedate="2012-04-01" WHERE joketext LIKE "%programmer%"';
+    $affectedRows = $pdo->exec($sql);
+    $output = 'Updated ' . $affectedRows .' rows.';
+}
+catch (PDOException $e) {
+    $output = 'Database error: ' . $e->getMessage() . '
+    in ' .$e->getFile() . ':' . $e->getLine();
+}
+
+include __DIR__ . '/../templates/output.html.php';
+```
+
+Para consultas que retornem uma tabela existe o método `query()`, que retorna um objeto representando a tabela. Esse objeto possui o método `fetch()` que retorna a próxima linha sempre que é executado, e `false` quando chega no final da tabela, e `fetchAll()` que retorna um array com todas as linhas da tabela.  
+
+```PHP
+$query = 'SELECT * FROM `TABLE1`';
+$result = $pdo->query($query);
+while ($row = $result->fetch()) {
+    $ids[] = $row['id'];
+}
+
+//ou
+
+foreach ($result as $row) {
+        $ids[] = $row['id'];
+}
+```
+
+>É uma boa prática colocar o nome de tabelas, schemes e colunas entre crases para evitar que haja confusão com comandos SQL.
+
+>Para inserir os resultados no template é possível utilizar a notação `<?= $variavavel ?>`, ela é equivalente a `<?php echo $variavel ?>.` Os comandos if, else e foreach também possuem versões curtas para serem utilizadas em templates:
+
+```PHP
+<?php if($variavel == 0): ?>
+    //código HTML
+<?php else: ?>
+    //código HTML
+<?php endif; ?>
+
+//foreach:
+
+<?php foreach($array as $item): ?>
+    //código HTML
+<?php? endforeach; >
+```
+
+>Existe uma função nativa no PHP chamada `isset()`, com ela é possível verificar se tal variável existe. Então é possível criar um erro, caso ocorra, inserir na variável `$error`, e utilizar `if(isset($error))` no template para exibir a mensagem de erro.  
+
+# Output Buffer
+
+Para se trabalhar com mais um template no mesmo código de torna complicado utilizar apenas includes, pois quando a função include é chamada ela imediatamente imprime o conteúdo do template no browser. Em algumas situações queremos que esse conteúdo esteja dentro de outro template, como um template de layout. Para isso se utilizam as funções de Output Buffer.
+- `ob_start()`: Essa função iniciar o buffer de saída. Então tudo que for impresso será capturado, e não enviado para o browser.
+- `ob_get_clean()`: Essa função retorna tudo que foi capturado após o início do Output Buffer.
+
+Exemplo:  
+
+```PHP
+ob_start();
+
+include __DIR__ . '/../templates/conteudo.html.php';
+
+$output = ob_get_clean();
+
+include __DIR__ . '/../templates/layout.html.php';
+```
+
+Nesse exemplo o layout pode utilizar o conteúdo com a variável $output. 
