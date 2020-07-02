@@ -28,26 +28,26 @@
 
     <div class="navbar-menu" id="navbarWebLivre">
         <div class="navbar-start">
-            <a class="navbar-item" id="navbar-item-inicio">Início</a>
-            <a class="navbar-item" id="navbar-item-lista">Lista</a>
-            <a class="navbar-item" id="navbar-item-adicionar">Adicionar um Novo</a>
+            <a class="navbar-item" id="navbar-item-inicio" href="/index.php">Início</a>
+            <a class="navbar-item" id="navbar-item-lista" href="/lista.php">Lista</a>
+            <a class="navbar-item" id="navbar-item-adicionar" href="/adicionar.php">Adicionar um Novo</a>
         </div>
     </div>
 </nav>
 
-<section class="section is-medium">
+<section class="section">
     <div class="container">
         <?= $output ?>
     </div>
 </section>
 
-<footer class="footer">
+<footer class="section">
+    <p>
+        Feito por Ismael Costa
+    </p>
+
     <div class="level">
         <div class="level-left">
-            <div class="level-item">
-                Feito por Ismael Costa
-            </div>
-
             <div class="level-item">
                 <a class="icon has-text-dark" href="https://github.com/ismaelcostarc">
                     <ion-icon name="logo-github"></ion-icon>

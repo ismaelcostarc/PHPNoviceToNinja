@@ -254,6 +254,8 @@ $pdo = new PDO('mysql:host=localhost;dbname=databasename;charset=utf8','user','p
 
 >É importante dizer ao PHP qual codificação utilizar ao enviar dados ao banco de dados, por isso é importante inserir `charset=utf8`, ou ele utilizará codificações mais básicas como ISO-8859-1 (ou Latin-1).
 
+>Realize a conexão com o Banco de Dados apenas quando necessária. A conexão com o servidor de Banco de Dados é um dos motivos para gargalos na aplicação, logo é recomendável evitar, quando possível.
+
 É possível realizar todas as operações com o banco de dados a partir dos métodos do objeto `$pdo`.
 
 ## Tratamento de exceções
@@ -369,7 +371,7 @@ foreach ($result as $row) {
 
 # Output Buffer
 
-Para se trabalhar com mais um template no mesmo código de torna complicado utilizar apenas includes, pois quando a função include é chamada ela imediatamente imprime o conteúdo do template no browser. Em algumas situações queremos que esse conteúdo esteja dentro de outro template, como um template de layout. Para isso se utilizam as funções de Output Buffer.
+Para se trabalhar com mais de um template no mesmo código se torna complicado utilizar apenas includes, pois quando a função include é chamada ela imediatamente imprime o conteúdo do template no browser. Em algumas situações queremos que esse conteúdo esteja dentro de outro template, como um template de layout. Para isso se utilizam as funções de Output Buffer.
 - `ob_start()`: Essa função iniciar o buffer de saída. Então tudo que for impresso será capturado, e não enviado para o browser.
 - `ob_get_clean()`: Essa função retorna tudo que foi capturado após o início do Output Buffer.
 
@@ -386,3 +388,29 @@ include __DIR__ . '/../templates/layout.html.php';
 ```
 
 Nesse exemplo o layout pode utilizar o conteúdo com a variável $output. 
+
+# MySQL e PHP
+
+## Passando datas para o MySQL
+
+O próprio MySQL possui uma função pronta que insere a data atual no formato aceito pelo banco de dados: `CURDATE()`.  
+
+## SQL Injection
+
+É preciso ter cuidado ao enviar para o MySQL dados vindos do usuário, pois podem conter comandos SQL maliciosos (Ataque **SQL Injection**). Então antes de qualquer inserção é necessário tratar os dados vindos do cliente. Por exemplo, se o dado inserido de um usuário estiver na variável global $_POST['nome']:
+
+```PHP
+//Primeiro é preciso avisar ao sql onde estará o dado enviado pelo usuário com :nome
+$sql = 'INSERT INTO `tabela` SET `nome` = :nome';
+
+//O objeto que está realizando a conexão com o banco de dados ($pdo) irá preparar a inserção
+//tomando os devidos cuidados, e devolverá um objeto
+$stmt = $pdo->prepare($sql);
+
+//O MySQL já está ciente dos locais que receberão valores do usuário, então já
+//podemos inserir esses dados nos locais corretos
+$stmt->bindValue(':recursoTexto', $_POST['recurso']);
+
+//O comando SQL já pode ser executado com segurança
+$stmt->execute();
+```
