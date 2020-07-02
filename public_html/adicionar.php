@@ -8,12 +8,19 @@ if (isset($_POST['recurso'])) {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $sql = 'INSERT INTO `recursos` SET
-            `recursoTexto` = :recursoTexto,
-            `recursoData` = CURDATE()';
+            `titulo` = :titulo,
+            `descricao` = :descricao,
+            `link` = :link,
+            `data` = CURDATE(),
+            `autor_id` = 1;';
 
         //Procedimento para evitar o SQL Injection
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':recursoTexto', $_POST['recurso']);
+
+        $stmt->bindValue(':titulo', $_POST['recurso']['titulo']);
+        $stmt->bindValue(':descricao', $_POST['recurso']['descricao']);
+        $stmt->bindValue(':link', $_POST['recurso']['link']);
+
         $stmt->execute();
 
         header('Content-Type: text/html; charset=utf-8');

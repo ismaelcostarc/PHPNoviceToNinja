@@ -11,14 +11,19 @@ try {
 
     $sql = 'SELECT * FROM `recursos`;';
     $result = $pdo->query($sql);
+    //É preciso inicializar a variável $recursos como um array vazio para o caso de
+    //não existir nenhum recurso armazenado no banco de dados
+    $recursos = [];
     
     //fetch() retorna sempre a próxima linha da tabela como um array
     //quando chegar ao final retorna false
     while($row = $result->fetch()) {
         $recursos[] = [
-            'recursoId' => $row['id'],
-            'recursoTexto' => $row['recursoTexto'],
-            'recursoData' => $row['recursoData']
+            'id' => $row['id'],
+            'titulo' => $row['titulo'],
+            'descricao' => $row['descricao'],
+            'link' => $row['link'],
+            'data' => $row['data']
         ];
     }
 
