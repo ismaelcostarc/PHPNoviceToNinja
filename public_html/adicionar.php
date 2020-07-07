@@ -1,27 +1,26 @@
 <?php
 
+include __DIR__ . '/../includes/Project/Functions.php';
+include __DIR__ . '/../includes/Project/Constants.php';
+include_once __DIR__ . '/../includes/Ninja/DatabaseFunctions.php';
+
 //Se existir uma requisição POST será executado uma inserção no banco de dados, caso não
 //haja, será exibido o formulário para inserir um novo recurso
 if (isset($_POST['recurso'])) {
     try {
-        $pdo = new PDO('mysql:host=localhost;dbname=recursoslivresdb;charset=utf8', 'recursoslivresuser', 'recursoslivrespassword');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo = databaseConnection(DBNAME, DBUSER, DBPASSWORD);
 
-        $sql = 'INSERT INTO `recursos` SET
-            `titulo` = :titulo,
-            `descricao` = :descricao,
-            `link` = :link,
-            `data` = CURDATE(),
-            `autor_id` = 1;';
+        $colunas = ['titulo', 'descricao', 'link', 'data', 'autor_id'];
 
-        //Procedimento para evitar o SQL Injection
-        $stmt = $pdo->prepare($sql);
+        $valores = [
+            $_POST['recurso']['titulo'],
+            $_POST['recurso']['descricao'],
+            $_POST['recurso']['link'],
+            '20-06-01',
+            1
+        ];
 
-        $stmt->bindValue(':titulo', $_POST['recurso']['titulo']);
-        $stmt->bindValue(':descricao', $_POST['recurso']['descricao']);
-        $stmt->bindValue(':link', $_POST['recurso']['link']);
-
-        $stmt->execute();
+        create($pdo, DBTABLES[0], $colunas, $valores);
 
         header('Content-Type: text/html; charset=utf-8');
         header('Location: /lista.php');

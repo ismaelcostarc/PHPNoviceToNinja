@@ -4,6 +4,8 @@
 $title = 'Início';
 $itemMenuAtivo = 'inicio';
 $titleIcon = 'home';
+//Apenas a página inicial deve possuir a section central maior, pois o conteúdo é pequeno
+$isMedium = 'is-medium';
 
 //Ínicio da da leitura do buffer
 ob_start();

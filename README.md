@@ -69,7 +69,7 @@ foreach($array as $elemento) {
     //código
 }
 
-foreach($chave => $valor) {
+foreach($array as $chave => $valor) {
     //código
 }
 ```
@@ -413,4 +413,42 @@ $stmt->bindValue(':recursoTexto', $_POST['recurso']);
 
 //O comando SQL já pode ser executado com segurança
 $stmt->execute();
+```
+
+# PHP Estruturado
+
+## Tipos de Includes
+
+- `include`;
+- `require`;
+- `include_once`;
+- `require_once`.
+
+As diferenças entre `include` e `require` são que se ocorrer algum erro no script incluído, include irá continuar o código normalmente. Já `require` irá interromper a execução do código imediatamente. Já `include_once` e `require_once` incluem o script apenas uma vez. Caso o script já tenha sido incluído antes, o comando é ignorado. É útil para operações custosas ou sensíveis que devem ser executadas apenas uma vez, como conexão ao Banco De Dados.  
+
+## Funções
+
+Funções em PHP seguem o seguinte modelo:
+
+```PHP
+function area($largura, $altura) {
+    return $largura * $altura;
+}
+```
+
+## Escopo das Variáveis
+
+Variáveis em PHP possuem dois escopos: escopo local e escopo global. Uma variável declarada dentro de uma função terá escopo local e só poderá ser acessada dentro da própria função. Variáveis declaradas fora de funções terão escopo global e só poderão acessadas fora de funções. Para utilizar uma variável global dentro de uma função é necessário passar a variável como argumento, em um processo chamado **Injeção de Dependências**.  
+
+## Argumentos
+
+É possível dizer ao PHP o valor padrão de um argumento, caso não seja passado quando a função for chamada, da seguinte forma:  
+
+```PHP
+function soma($primeiro = 1, $segundo = 2) {
+    return $primeiro + $segundo;
+}
+
+soma(); //retorna 3
+soma(2); //retorna 4
 ```

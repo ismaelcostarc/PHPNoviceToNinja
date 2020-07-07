@@ -1,16 +1,15 @@
 <?php
 
+include __DIR__ . '/../includes/Project/Functions.php';
+include __DIR__ . '/../includes/Project/Constants.php';
+include_once __DIR__ . '/../includes/Ninja/DatabaseFunctions.php';
+
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=recursoslivresdb;charset=utf8', 'recursoslivresuser', 'recursoslivrespassword');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = databaseConnection(DBNAME, DBUSER, DBPASSWORD);
 
-    //Prevenção contra SQL Injection
-    $sql = 'DELETE FROM `recursos` WHERE `id` = :recursoId;';
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindValue(':recursoId', $_POST['recursoId']);
-    $stmt->execute();
+    deleteById($pdo, 'recursos', 'id', $_POST['recursoId']);
 
-    //O usuário é redirecionado para a lista de recursos
+    //O usuário é redirecionado para a lista de materiais
     header('Content-Type: text/html; charset=utf-8');
     header('Location: /lista.php');
 } catch (PDOException $e) {

@@ -1,42 +1,31 @@
 <?php
 
-try {
-    $pdo = new PDO('mysql:host=localhost;dbname=recursoslivresdb;charset=utf8', 'recursoslivresuser', 'recursoslivrespassword');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+include __DIR__ . '/../includes/Project/Functions.php';
+include __DIR__ . '/../includes/Project/Constants.php';
+include_once __DIR__ . '/../includes/Ninja/DatabaseFunctions.php';
 
+try {
     //Variáveis que serão utilizadas nos templates
     $title = 'Lista';
     $itemMenuAtivo = 'lista';
     $titleIcon = 'list';
 
-    $sql = 'SELECT * FROM `recursos`;';
-    $result = $pdo->query($sql);
-    //É preciso inicializar a variável $recursos como um array vazio para o caso de
-    //não existir nenhum recurso armazenado no banco de dados
-    $recursos = [];
-    
-    //fetch() retorna sempre a próxima linha da tabela como um array
-    //quando chegar ao final retorna false
-    while($row = $result->fetch()) {
-        $recursos[] = [
-            'id' => $row['id'],
-            'titulo' => $row['titulo'],
-            'descricao' => $row['descricao'],
-            'link' => $row['link'],
-            'data' => $row['data']
-        ];
-    }
+    //Conexão com o Banco de Dados
+    $pdo = databaseConnection(DBNAME, DBUSER, DBPASSWORD);
+
+    $numeroRecursos = quantity($pdo, DBTABLES[1]);
+
+    $recursos = listarTodosRecursos($pdo);
 
     //Leitura do buffer
     ob_start();
     include __DIR__ . '/../templates/lista.html.php';
     $output = ob_get_clean();
-}
-catch(PDOException $e) {
+} catch (PDOException $e) {
     $title = 'Um erro ocorreu.';
     $titleIcon = 'warning';
     $output = 'Database error: ' . $e->getMessage() .
-        'in ' .$e->getFile() .
+        'in ' . $e->getFile() .
         ':' . $e->getLine();
 }
 
