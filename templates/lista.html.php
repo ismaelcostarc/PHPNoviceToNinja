@@ -40,11 +40,11 @@
         <div class="level">
             <div class="level-left">
                 <div class="level-item">
-                    <a class="button" href="/editar.php?id=<?= $recurso['id'] ?>">Editar</a>
+                    <a class="button" href="/recursos/editar&id=<?= $recurso['id'] ?>">Editar</a>
                 </div>
 
                 <div class="level-item">
-                    <form action="apagar.php" method="POST">
+                    <form action="/recursos/apagar" method="POST">
                         <input type="hidden" name="recursoId" value="<?= $recurso['id'] ?>">
                         <input type="submit" class="button is-danger" value="Apagar">
                     </form>

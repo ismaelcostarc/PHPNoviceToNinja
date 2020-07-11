@@ -1,31 +1,28 @@
 <?php
 
-include __DIR__ . '/../Ninja/DatabaseFunctions.php';
-
-//Procedimento para evitar o Ataque XSS
-function h($string) {
-    return htmlspecialchars($string, ENT_QUOTES, 'UTF_8');
-}
-
 //Retorna todos os materiais de estudos
-function listarTodosRecursos($pdo) {
+function listarTodosRecursos(DatabaseTable $recursosTabela, DatabaseTable $autoresTabela)
+{
     //É preciso inicializar a variável $recursos como um array vazio para o caso de
     //não existir nenhum recurso armazenado no banco de dados
     $recursos = [];
 
     //$resultadoBD contém o array com todas as linhas da tabela de recursos
-    $resultadoBD = readAll($pdo, DBTABLES[0]);
+    $resultadoBD = $recursosTabela->readAll();
 
-    foreach($resultadoBD as $row) {
+    foreach ($resultadoBD as $row) {
         //Encontrar o nome do autor
-        $nomeAutor = readById($pdo, DBTABLES[1], 'id', $row['autor_id'])['nome'];
+        $nomeAutor = $autoresTabela->readById($row['autor_id'])['nome'];
+
+        //Transformar a data vinda do banco de dados em um objeto DateTime
+        $data = new DateTime($row['data']);
 
         $recursos[] = [
             'id' => $row['id'],
             'titulo' => $row['titulo'],
             'descricao' => $row['descricao'],
             'link' => $row['link'],
-            'data' => $row['data'],
+            'data' => $data->format('d/m/Y'),   //Formato da data a ser enviada para o HTML
             'autorId' => $nomeAutor
         ];
     }

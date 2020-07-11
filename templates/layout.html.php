@@ -2,7 +2,7 @@
 <html lang="pt">
 
 <head>
-    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $title ?></title>
     <link rel="shortcut icon" type="image/x-icon" href="assets/<?= $titleIcon ?>.svg" />
@@ -28,16 +28,18 @@
 
         <div class="navbar-menu" id="navbarWebLivre">
             <div class="navbar-start">
-                <a class="navbar-item" id="navbar-item-inicio" href="/index.php">Início</a>
-                <a class="navbar-item" id="navbar-item-lista" href="/lista.php">Lista</a>
-                <a class="navbar-item" id="navbar-item-adicionar" href="/adicionar.php">Adicionar um Novo</a>
+                <a class="navbar-item <?php if ($isActive == 'inicio') echo 'is-active' ?>" id="navbar-item-inicio" href="/">Início</a>
+                <a class="navbar-item <?php if ($isActive == 'lista') echo 'is-active' ?>" id="navbar-item-lista" href="/recursos/lista">Lista</a>
+                <a class="navbar-item <?php if ($isActive == 'adicionar') echo 'is-active' ?>" id="navbar-item-adicionar" href="/recursos/editar">Adicionar</a>
             </div>
         </div>
     </nav>
 
-    <section class="section <?= $isMedium ?>">
+    <section class="section <?php if ($title == 'Início') echo 'is-medium' ?>">
         <div class="container">
+            <!----------------  OUTPUT  ------------------>
             <?= $output ?>
+            <!-------------------------------------------->
         </div>
     </section>
 
@@ -79,7 +81,6 @@
     <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-
             // Get all "navbar-burger" elements
             const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
 
@@ -101,13 +102,7 @@
                     });
                 });
             }
-
         });
-
-        if (<?= $itemMenuAtivo ?> !== '') {
-            $navbarItem = document.getElementById('navbar-item-<?= $itemMenuAtivo ?>');
-            $navbarItem.classList.add('is-active');
-        }
     </script>
 </body>
 

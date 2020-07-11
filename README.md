@@ -1,10 +1,13 @@
 # PHP Novice To Ninja
 
-Sistema desenvolvido durante a leitura do livro [PHP Novice To Ninja](https://www.amazon.com/PHP-MySQL-Novice-Ninja-Speed/dp/0994346980), com anotações e dicas retiradas do livro.  
+# Recursos Livres
 
-Nesse projeto foi utilizado o Apache 2 como servidor web, MySQL como servidor de Banco de Dados e PHP 7.4. Para o frontend foi utilizado o framework Bulma.
+Sistema para criação de listas de Materiais Gratuitos na internet, inspirado pela leitura do livro [PHP Novice To Ninja](https://www.amazon.com/PHP-MySQL-Novice-Ninja-Speed/dp/0994346980), com anotações feitas durante a leitura. 
 
-Aplicação web hospedada no 000webhost: [https://recursoslivres.000webhostapp.com/](https://recursoslivres.000webhostapp.com/)
+Foram utilizados o Apache 2 como servidor web, MySQL como servidor de Banco de Dados e PHP 7.4. Para o frontend foi utilizado o framework Bulma. No backend foi utilizado o framework simples desenvolvido em PHP puro durante a leitura do livro, que será chamado de [Ninja]().
+
+Aplicação hospedada no 000webhost: [https://recursoslivres.000webhostapp.com/](https://recursoslivres.000webhostapp.com/)
+
 # Sintaxe do PHP
 
 PHP é uma linguagem que roda dentro de um servidor web. Ao receber uma requisição HTTP o servidor web irá verificar os arquivos dentro da sua pasta pública (nesse caso `public_html`), se houver um arquivo `index.php`, ele será executado pelo interpretador PHP. Dentro de scripts, o código a ser executado está contido dentro do bloco `<?php ?>`. O que estiver fora desse bloco será enviado como `html` para o servidor.
@@ -236,7 +239,7 @@ include __DIR__ . '/../templates/count.html.php';
 
 >`__DIR__` é uma constante que possui o caminho absoluto do diretório principal. É uma boa prática utilizar o include com `__DIR__`, pois o include busca as pastas a partir da pasta pública, não a partir do diretório atual do script que está sendo executado. Utilizando `include __DIR__ .` estamos dizendo ao interpretador para iniciar a busca a partir do diretório atual.
 
->Um script PHP que receba requisições HTTP e escolha qual template utilizar é chamado **Controller**. É uma boa prática arquitetural utilizar apenas um Controlador na pasta pública, que será chamado de **Front Controller**.
+>Um script PHP que receba requisições HTTP e escolha qual template utilizar é chamado **Controller**. É uma boa prática arquitetural utilizar apenas um Controlador na pasta pública, que será chamado de **Front Controller** ou **Single Entry Point**.
 
 # Banco de Dados
 
@@ -285,7 +288,7 @@ Quando uma exceção é lançada o bloco try é imediatamente interrompido, e o 
 
 # Orientação a Objetos em PHP
 
-PHP suporta tanto programação procedural quanto orientada a objetos. Objetos são criados em PHP com o uso da palavra reservada new. É possível acessar suas propriedades e métodos com o urso da seta (->).
+PHP suporta tanto programação procedural quanto orientada a objetos. Objetos são criados em PHP com o uso da palavra reservada new. É possível acessar suas propriedades e métodos com o uso da seta (->).
 
 ```PHP
 $objeto = new ClasseDoObjeto();
@@ -372,7 +375,7 @@ foreach ($result as $row) {
 # Output Buffer
 
 Para se trabalhar com mais de um template no mesmo código se torna complicado utilizar apenas includes, pois quando a função include é chamada ela imediatamente imprime o conteúdo do template no browser. Em algumas situações queremos que esse conteúdo esteja dentro de outro template, como um template de layout. Para isso se utilizam as funções de Output Buffer.
-- `ob_start()`: Essa função iniciar o buffer de saída. Então tudo que for impresso será capturado, e não enviado para o browser.
+- `ob_start()`: Essa função inicia o buffer de saída. Então tudo que for impresso será capturado, e não enviado para o browser.
 - `ob_get_clean()`: Essa função retorna tudo que foi capturado após o início do Output Buffer.
 
 Exemplo:  
@@ -424,7 +427,7 @@ $stmt->execute();
 - `include_once`;
 - `require_once`.
 
-As diferenças entre `include` e `require` são que se ocorrer algum erro no script incluído, include irá continuar o código normalmente. Já `require` irá interromper a execução do código imediatamente. Já `include_once` e `require_once` incluem o script apenas uma vez. Caso o script já tenha sido incluído antes, o comando é ignorado. É útil para operações custosas ou sensíveis que devem ser executadas apenas uma vez, como conexão ao Banco De Dados.  
+As diferenças entre `include` e `require` são que se ocorrer algum erro no script incluído, `include` irá continuar o código normalmente. Já `require` irá interromper a execução do código imediatamente. Já `include_once` e `require_once` incluem o script apenas uma vez. Caso o script já tenha sido incluído antes, o comando é ignorado. É útil para operações custosas ou sensíveis que devem ser executadas apenas uma vez, como conexão ao Banco De Dados.  
 
 ## Funções
 
@@ -452,3 +455,127 @@ function soma($primeiro = 1, $segundo = 2) {
 soma(); //retorna 3
 soma(2); //retorna 4
 ```
+
+## Datas em PHP
+
+A classe `DateTime` pode ser usada para representar datas em PHP e formatar elas de diferentes formas:
+
+```PHP
+$date = new DateTime();
+echo $date->format('d/m/Y H:i:s');
+```
+
+Quando um objeto `DateTime()` é instanciado sem argumentos a data gerada é a atual. É possível criar objetos `DateTime` a partir de strings, passando a string como argumento para o construtor. Ex:
+
+```PHP
+$date = new DateTime('5th March 2019');
+echo $date->format('d/m/Y');
+```
+
+>Datas e tempo em MySQL sempre são armazenados no seguinte formato: `YYYY-MM-DD HH:MM:SS`.
+
+## Null coalescing operator
+
+No PHP 7 foi introduzido o **Null coalescing operator**, que realiza a operação "Se essa variável existir imprima ela, caso contrário imprima o seguinte". Exemplo:
+
+```
+<?= $resultado ?? 'Ocorreu um erro.' ?>
+```
+
+# Objetos e Classes
+
+Tal como variáveis, classes podem conter quaisquer tipos de caracteres alfanuméricos nos seus nomes. Contudo, caracteres especiais como `-, +, *, /, {` ou espaço não são permitidos. Por convenção, nomes de classes em PHP utilizam **CamelCase**, começando com uma letra maiúscula, com o restante dos caracteres em letra minúscula, até a próxima palavra. Também, por convenção, utiliza-se uma classe por script, ambos com o mesmo nome.
+
+Classes são modelos para construir objetos que possuem propriedades e métodos. Para criar um objeto de uma classe é utilizado o método especial __construct. É possível especificar o acesso a propriedades e métodos como privados ou públicos. Para as propriedades e métodos da própria classe é preciso utilizar a variável `$this`. Sintaxe:
+
+```PHP
+class {
+    //Propriedades
+    private $nome;
+    private $notas;
+
+    public function __construct($nome, $notas) {
+        $this->nome = $nome;
+        $this->notas = $notas;
+    }
+}
+```
+
+ ##  Type Hinting
+
+ Para evitar que os argumentos sejam passados a um método de forma incorreta, é possível dizer ao interpretador PHP qual o tipo de cada argumento. Exemplo:
+
+ ```PHP
+ public function __contruct(string $nome, array $notas) {
+     //...
+ }
+ ```
+
+ Este é um aspecto da **Programação Defensiva** em PHP, um conjunto de técnicas de prevenção de bugs.
+
+ # Controllers
+
+ *Controllers* são classes que definem qual template utilizar e quais dados enviar para esse template. O *controller* principal que decide qual controller específico utilizar é chamado **Front Controller** ou **Single Entry Point** e é o primeiro script a ser executado pela aplicação. Cada método em um objeto *controller* é chamado de **action**. Em uma aplicação de uma escola, por exemplo, poderíamos ter um *controller* para alunos, um para os professores, um para terceirizados, etc. O *Front Controller* dessa aplicação poderia receber uma requisição para verificar a média de notas de todos os alunos, logo ele escolheria o *controller* responsável pelos alunos, e o *action* que realiza a função de tirar a média das notas.  
+
+ Por motivos de organização de código, cada *action* retorna variáveis que serão utilizados pelo layout, e um array interno com as variáveis específicas para aquele template. Por exemplo:
+
+ ```PHP
+ return [
+     'titulo' => 'Média das notas de cada aluno',
+     'menuAba' => 'alunos',
+     'variaveis' => [
+         'mediaNotas' => $mediasNotas,
+         'quantidadeAlunos' => $quantidadeAlunos
+     ]
+ ];
+ ```
+
+ ## Extract
+
+ Quando o *Front Controller* receber o array associativo com a resposta do controller específico, é possível separar o array em variáveis diferentes com a função `extract($array)`.
+
+ >Antes de utilizar `extract($variaveis)` certifique-se de que essa operação seja realizada em um escopo diferente (dentro de uma função por exemplo), para evitar que haja conflitos de nomes, pois uma variável do template pode ter o mesmo nome que o variável utilizada pelo layout, como `titulo`.
+
+ ## Rotas e Recursos
+
+ Em aplicações modernas recursos não existem como arquivos físicos no servidor, quando um cliente solicita um recurso, a aplicação irá construir o recurso dependendo do *Controller* indicado, da *action* a ser tomada e da identificação do recurso específico. *Rotas* podem ser definidas como sendo o "endereço" de um recurso, elas podem indicar o *Controller* e passar a identificação do recurso específico que está sendo solicitado. Por exemplo, se o cliente solicita as notas de um aluno de matricula `348336`:
+
+ ```
+ http://escola.com/alunos/348336
+ ```
+ 
+ Neste caso a rota é `alunos/348336`. Nesse exemplo a URL informa ao servidor o *controller* a ser utilizado e a identificação do recurso, porém não informa qual *action* será chamada. Em aplicações que utilizam APIs REST é uma prática comum associar a *action* ao verbo HTTP. Por exemplo, para obter a nota do aluno cuja matrícula é `348336` o cabeçalho da requisição HTTP ficaria da seguinte forma:
+
+ ```
+ GET http://escola.com/alunos/348336 HTTP/1.1
+ ```
+
+ Em aplicações mais simples é possível também informar a *action* na própria rota:
+
+ ```
+ http://escola.com/alunos/obter/348336
+ ```
+ 
+ Enfim, a decisão de como deve ser feito o roteamento depende muito do framework utilizado, de algum padrão seguido e de decisões de arquitetura.
+
+ ## Search Engines
+
+ Em PHP, funções **não** são *case-sensitive*. Logo, se uma requisição especificar a ação específica, independente se escrever com letras minúsculas ou maiúsculas receberá o mesmo recurso. Por exemplo, `http://escola.com/alunos/obter/348336` e `http://escola.com/alunos/OBTER/348336` chamarão a mesma *action*: `obter`. Apesar de que a princípio isso não pareça ser problema, buscadores como Google tratam esse comportamento como páginas repetidas, jogando essas URLs para as últimas posições ou sequer exibindo elas. Para evitar isso é necessário tratar a URL digitada. É possivel checar se a URL está totalmente em minúscula, e caso não esteja, redirecionar para o endereço totalmente em minúsculo, tendo o cuidado de utilizar o código de resposta HTTP 301 Moved Permanently. Em PHP é feito da seguinte forma:
+
+ ```PHP
+ //A função strlower() torna todos os caracteres da string recebida em minúsculos
+ if($route == strlower($route)) {
+     $Controller->$action();
+ } else {
+     //Insere o código de resposta HTTP 301
+     http_response_code(301);
+     //Realiza o redirecionamento
+     header('location: index.php/' . strlower($route));
+ }
+ ```
+
+ ## Injeção de Dependências
+
+ Os objetos que um determinado objeto necessita receber como argumentos são chamados **Dependências**. Muitas vezes não sabemos qual objeto estaremos utilizando, logo se torna um problema decidir quais serão os objetos a serem passados como parâmetros. Esse problema é conhecido como **Injeção de Dependências**, e existem diversas soluções propostas, porém nenhum é aceita como o melhor padrão.
+
+ Por exemplo, em uma aplicação web teremos classes de **Controllers** porém não sabemos qual delas será chamada, e logo quais dependências ela necessitará.
