@@ -1,7 +1,7 @@
 <?php
 
 //Retorna todos os materiais de estudos
-function listarTodosRecursos(DatabaseTable $recursosTabela, DatabaseTable $autoresTabela)
+function listarTodosRecursos(\Ninja\DatabaseTable $recursosTabela, \Ninja\DatabaseTable $autoresTabela)
 {
     //É preciso inicializar a variável $recursos como um array vazio para o caso de
     //não existir nenhum recurso armazenado no banco de dados

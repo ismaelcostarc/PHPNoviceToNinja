@@ -1,11 +1,13 @@
 <?php
 
+namespace Project;
+
 class RecursosController
 {
     private $recursosTabela;
     private $autoresTabela;
 
-    public function __construct(DatabaseTable $recursosTabela, DatabaseTable $autoresTabela)
+    public function __construct(\Ninja\DatabaseTable $recursosTabela, \Ninja\DatabaseTable $autoresTabela)
     {
         $this->recursosTabela = $recursosTabela;
         $this->autoresTabela = $autoresTabela;
@@ -22,13 +24,15 @@ class RecursosController
             'title' => 'Início',
             'template' => 'inicio',
             'isActive' => 'inicio',
-            'titleIcon' => 'home',
+            'titleIcon' => 'home'
         ];
     }
 
     public function lista()
     {
         $numeroRecursos = $this->recursosTabela->quantity();
+
+        include_once __DIR__ . '/../../includes/Project/ProjectFunctions.php';
 
         $recursos = listarTodosRecursos($this->recursosTabela, $this->autoresTabela);
 
@@ -53,14 +57,14 @@ class RecursosController
             //Será inserida uma nova data apenas se for para adicionar um recurso novo,
             //caso seja para atualizar será mantida a Data original
             if ($recurso['data'] == '') {
-                $recurso['data'] = new DateTime();
+                $recurso['data'] = new \DateTime();
             }
             $recurso['autor_id'] = 1;
 
             $this->recursosTabela->save($recurso);
 
             header('Content-Type: text/html; charset=utf-8');
-            header('Location: ?action=lista');
+            header('Location: /recursos/lista');
         } else {
             //Caso seja para editar um material existente, será repassado o valor do id na query string
             if (isset($_GET['id'])) {
@@ -98,6 +102,6 @@ class RecursosController
 
         //O usuário é redirecionado para a lista de materiais
         header('Content-Type: text/html; charset=utf-8');
-        header('Location: ?action=lista');
+        header('Location: /recursos/lista');
     }
 }

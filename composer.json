@@ -1,0 +1,16 @@
+{
+    "name": "vagrant/php-novice-to-ninja",
+    "authors": [
+        {
+            "name": "Ismael Assunção Costa",
+            "email": "maelcosta96@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Ninja\\": "classes/Ninja",
+            "Project\\": "classes/Project"
+        }
+    }
+}
