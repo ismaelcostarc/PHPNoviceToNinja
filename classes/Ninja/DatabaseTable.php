@@ -45,7 +45,7 @@ class DatabaseTable
     {
         foreach ($values as $key => $value) {
             if ($value instanceof \DateTime) {
-                $values[$key] = $value->format('Y-m-d');
+                $values[$key] = $value->format('Y-m-d h:i:s');
             }
         }
 
@@ -67,6 +67,7 @@ class DatabaseTable
             if ($record[$this->primaryKey] == '') {
                 $record[$this->primaryKey] = null;
             }
+
             $this->create($record);
         } catch (\PDOException $e) {
             $this->updateById($record, $record[$this->primaryKey]);
@@ -136,12 +137,10 @@ class DatabaseTable
         return $result->fetchAll();
     }
 
-    //Retorna um recurso específico por seu ID
-    //$primaryKey é o nome da coluna que contém a chave primária
-    //que pode ser 'id', 'cpf', 'matricula', etc
-    public function readById($id)
+    //Retorna um recurso específico de acordo com o nome da coluna
+    public function read($column, $value)
     {
-        $sql = "SELECT * FROM `$this->table` WHERE `$this->primaryKey` = $id;";
+        $sql = "SELECT * FROM `$this->table` WHERE `$column` = $value;";
         $result = $this->query($sql);
 
         return $result->fetch();

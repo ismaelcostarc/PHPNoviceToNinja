@@ -6,13 +6,16 @@ class EntryPoint
 {
     //String contendo a rota vinda da URL
     private $route;
+    //Verbo HTTP
+    private $method;
     //Objeto que contém o método que decide a ação e o controlador
     //de acordo com a rota especificada
     private $routes;
 
-    public function __construct($route, $routes)
+    public function __construct($route, $method, Routes $routes)
     {
         $this->route = $route;
+        $this->method = $method;
         $this->routes = $routes;
         $this->checkUrl();
     }
@@ -57,7 +60,14 @@ class EntryPoint
     public function run($directoryLayout)
     {
         //executa a Action do Controlador correto e retorna as variáveis de template
-        $page = $this->routes->callAction($this->route);
+        $routes = $this->routes->getRoutes();
+
+        //Com a rota e o método enviados pelo index.php podemos descobrir o
+        //controller e a action no array multidimensional $routes
+        $controller = $routes[$this->route][$this->method]['controller'];
+        $action = $routes[$this->route][$this->method]['action'];
+
+        $page = $controller->$action();
 
         //Transforma cada elemento do array associativo em uma variável separada
         extract($page);

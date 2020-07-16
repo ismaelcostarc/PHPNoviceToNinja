@@ -513,6 +513,21 @@ class {
 
  Este é um aspecto da **Programação Defensiva** em PHP, um conjunto de técnicas de prevenção de bugs.
 
+ # URLs Amigáveis
+
+ Recursos podem ser acessados de duas formas. Podem ser arquivos reais existentes no servidor, como `http://exemplo.com/minhapagina.html`, ou podem ser construídos pelo servidor. Nesse segundo caso a URL necessita apenas receber as variáveis necessárias para saber como construir esse recurso. Essas variáveis podem ser passadas de duas formas: em *query strings* ou simulando o formato de pastas com **URL Rewriting** ou **URLs Amigáveis**. No formato de *query string* a URL seguiria o seguinte formato: `http://exemplo.com/?controller=alunos&action=adicionar&matricula=355`. Utilizando URLs Amigáveis ficaria: `http://exemplo.com/alunos/adicionar/355`.  
+
+ Para que o servidor reconheça que o restante da URL após o domínio não são pastas, mas variáveis, é necessário configurar ele. No Apache, por exemplo, é possível informar os seguintes comandos no arquivo `.htaccess` na pasta pública:
+
+ ```
+ RewriteEngine On
+ RewriteCond %{REQUEST_FILENAME} !-f
+ RewriteCond %{REQUEST_FILENAME} !-d
+ RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+ ```
+
+ No exemplo acima tudo que vier após o nome de domínio fica registrado na variável `url`. Se `http://exemplo.com/alunos/adicionar/355` for digitado no navegador, é possível acessar os valores com `$_GET['url'];` no script PHP. Existem várias formas de realizar a passagem de parâmetros para o código PHP, ficando a cargo do programador decidir.
+
  # Controllers
 
  *Controllers* são classes que definem qual template utilizar e quais dados enviar para esse template. O *controller* principal que decide qual controller específico utilizar é chamado **Front Controller** ou **Single Entry Point** e é o primeiro script a ser executado pela aplicação. Cada método em um objeto *controller* é chamado de **action**. Em uma aplicação de uma escola, por exemplo, poderíamos ter um *controller* para alunos, um para os professores, um para terceirizados, etc. O *Front Controller* dessa aplicação poderia receber uma requisição para verificar a média de notas de todos os alunos, logo ele escolheria o *controller* responsável pelos alunos, e o *action* que realiza a função de tirar a média das notas.  
@@ -579,3 +594,153 @@ class {
  Os objetos que um determinado objeto necessita receber como argumentos são chamados **Dependências**. Muitas vezes não sabemos qual objeto estaremos utilizando, logo se torna um problema decidir quais serão os objetos a serem passados como parâmetros. Esse problema é conhecido como **Injeção de Dependências**, e existem diversas soluções propostas, porém nenhum é aceita como o melhor padrão.
 
  Por exemplo, em uma aplicação web teremos classes de **Controllers** porém não sabemos qual delas será chamada, e logo quais dependências ela necessitará.
+
+ ## Autoloading, Namespaces e Composer
+
+ *Namespaces* são um recurso do PHP para evitar que haja conflitos entre classes e pacotes. Sempre que uma classe declara estar dentro de um *namespace* é criada um diretório *virtual*. Por exemplo:
+
+ ```PHP
+ namespace Alunos;
+
+ class AlunosController {
+     //....
+ }
+ 
+ //------------ Em outro script
+
+ $alunosController = new \Alunos\AlunosController();
+
+ //------------ OU
+
+ use \Alunos\AlunosController;
+
+ $alunosController = new AlunosController();
+ ```
+
+ Também é possível usar namespace em *type hinting*:
+
+ ```PHP
+ function exemplo(\Alunos\AlunosController $controller) {
+     //...
+ }
+ ```
+
+ Dentro de classes que estão em *namespaces*, objetos de classes próprias do PHP necessitam do caractere `\` antes dos nomes, pois elas não pertencem ao *namespace* da classe, mas ao *namespace* **root** (`\`). Por exemplo:
+
+  ```PHP
+ namespace Alunos;
+
+ class AlunosController {
+    public function __construct(\PDO $conexaoBancoDeDados) {
+        //...
+    }
+ }
+ ```
+
+ Conforme o código cresce, aumentam o número de *includes* e *requires* para cada script utilizado. Para diminuir a quantidade de código foi criado o **Autoloading**. Sempre que um objeto é instanciado ou *type hinting* for utilizado, e o script da class não estiver sido incluído com *include* ou *require*, a função *autoloader* irá buscar a classe no *namespace* de mesmo nome. Para informar ao interpretador PHP onde cada namespace está localizado é possível construir uma função própria, ou utilizar o gerenciador de dependências **Composer**. No arquivo `composer.json` basta informar:
+
+ ```JSON
+ {
+    "name": "...",
+    "authors": [
+        {
+            "name": "...",
+            "email": "..."
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Alunos\\": "classes/Alunos",
+            "Project\\": "classes/Project"
+            //"Namespace\\": "caminho do namespace"
+        }
+    }
+}
+ ```
+
+ Feito isso, já será possível retirar todos os *includes* e *requires* para as classes.
+
+ # Interfaces
+
+ Tal como Java, em PHP é possível forçar que uma classe siga um padrão já especificado com o uso de **Interfaces**. Para se criar uma interface:
+
+ ```PHP
+ interface Routes {
+     public function getRoutes();
+ }
+ ```
+
+ Interfaces contém somente o cabeçalho dos métodos, a implementação fica a cargo das classes:
+
+ ```PHP
+ class AlunosRoutes {
+     public function getRoutes() {
+         //Código
+     }
+ }
+ ```
+
+ Caso a classe não siga as regras da interface, o interpretador apresentará um erro.
+
+ # Validação de Dados
+
+ É necessário sempre validar as informações tanto do lado do cliente quanto do lado servidor. Do lado do cliente é possível validar os dados com HTML e Javascript. O atributo required em tags input no HTML exige que os campos não estejam em branco. O uso de tipos corretos de input também serve como uma validação.  
+
+ Do lado do servidor podemos verificar cada dado, e caso algum esteja incorreto retornar novamente à página do formulário preenchida e com os avisos necessários.
+ 
+ >Para evitar campos em branco é preferível utilizar a função `empty($campo)` invés de comparar a entrada a uma string vazia, `$campo == ''`, pois usuários maliciosos podem enviar um formulário sem sequer preencher nenhum campo, logo as variáveis sequer existirão. A função `empty()` verifica se a variável existe e possui valor.
+
+ # Segurança de Senhas
+
+ Existem diversas formas de armazenar senhas no Banco de Dados, porém atualmente a função mais segura é `password_hash($senha, PASSWORD_DEFAULT);`.
+
+ # Cookies e Sessões
+
+ O protocolo HTTP por padrão é **stateless**, ou seja, ele não armazena estados sobre o cliente. Porém é possível realizar isso com o uso de **cookies**. *Cookies* são pares nome-valor armazenados no cliente que podem ser transmitidos entre o cliente e servidor no cabeçalho de mensagens HTTP. Quando um cookie for enviado por um cliente pela primeira vez, todas as futuras requisições para o mesmo site utilizarão o conteúdo armazenado no *cookie*.  
+
+ ## Ciclo de vida de um cookie gerado pelo PHP
+
+ 1. O navegador requisita uma URL que corresponde a um script PHP. Dentro do script é realizada uma chamada à função nativa `setcookie`.
+ 2. A página produzida pelo script PHP é enviada de volta para o navegador com um cabeçalho HTTP `set-cookie` que contém o nome e o valor do *cookie*.
+ 3. Quando recebe a resposta HTTP, o navegador armazena o *cookie* que veio no cabeçalho.
+ 4. As próximas requisições HTTP para a mesma URL conterão um cabeçalho contendo o nome e o valor do *cookie*.
+ 5. Quando o script PHP recebe uma requisição que contenha um *cookie* ele conseguirá acessar o nome e valor com o array associativo global $_COOKIE, contendo os nomes e valores dos cookies.  
+
+>A função `setcookie()` deve ser chamada antes que qualquer envio seja feito para o cliente.
+
+O único parâmetro obrigatório é o nome do *cookie*. Chamando a função `setcookie()` com apenas o nome do *cookie* irá deletar o *cookie* armazenado no cliente. Para criar ou modificar um *cookie* é necessário passar também um valor após o nome.  
+
+Por padrão o *cookie* ficará armazenado no navegador até que ele seja fechado. Para que o *cookie* possa ser utilizado novamente é preciso informar em quanto tempo em que ele irá expirar. O formato de tempo padrão a ser utilizado é o **Unix Timestamp**. A função `time()` em PHP retorna a data atual no formato *Unix Timestamp*. Para informar ao navegador em quanto tempo o *cookie* irá expirar, acrescente o tempo em segundos. Por exemplo, para criar um *cookie* com duração de 1 ano:
+
+```PHP
+setcookie('nome', 'valor', time() + 3600 * 24 * 365);
+
+//Para deletar ele
+setcookie('nome', '', time() + 3600 * 24 * 365);
+```
+
+Outros parâmetros opcionais são parâmetros para informar o diretório, domínio e segurança. Mais informações na [Documentação oficial](https://www.php.net/manual/pt_BR/function.setcookie.php).  
+
+*Cookies* são úteis para armazenar informações pequenas, como a quantidade de visitas no site, porém se torna inviável para armazenar dados grandes. Logo para aplicações grandes, como redes sociais ou e-commerces, **sessões** são mais úteis.
+
+## Sessões
+
+Sessões são dados do cliente armazenados no servidor (em um diretório configurado no php.ini, geralmente `/tmp` para Linux). Para acessar esses dados é necessário apenas um *cookie* com a identificação de acesso a esses dados. Por exemplo, para uma rede social, o primeiro login irá gerar um *cookie* de sessão com o login e senha do usuário. Para que em toda nova tela da rede o usuário não precise logar novamente, o *cookie* de sessão é enviado na requisição HTTP, autenticando o usuário.  
+
+Para dizer ao PHP para verificar se já existe uma sessão ativa, ou criar uma nova, utilizamos a função `session_start()`. Após uma sessão ser iniciada, podemos inserir valores nela com a variável global `$_SESSION`. Por exemplo:
+
+```PHP
+session_start();
+$_SESSION['myPassword'] = 'myPassword';
+
+//Para remover a variável da sessão atual
+unset($_SESSION['myPassword']);
+//Se quisermos destruir a sessão atual
+$_SESSION = [];
+session_destroy();
+```
+
+## Logging
+
+Para realizar o login de um usuário e manter ele, existem duas abordagens:

@@ -1,13 +1,13 @@
 <?php
-
 require __DIR__ . '/../vendor/autoload.php';
 
 try {
     //Se a rota não for especificada, a rota escolhida será o início
     $route = $_GET['route'] ?? 'recursos/inicio';
+    $method = $_SERVER['REQUEST_METHOD'];
     $directoryLayout = __DIR__ . '/../templates/layout.html.php';
 
-    $entryPoint = new Ninja\EntryPoint($route, new Project\RecursosRoutes());
+    $entryPoint = new Ninja\EntryPoint($route, $method, new Project\RecursosRoutes());
     $page = $entryPoint->run($directoryLayout);
 } catch (PDOException $e) {
     $title = 'Um erro ocorreu.';

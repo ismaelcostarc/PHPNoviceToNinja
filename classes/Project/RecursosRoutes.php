@@ -2,9 +2,10 @@
 
 namespace Project;
 
-class RecursosRoutes
+class RecursosRoutes implements \Ninja\Routes
 {
-    public function callAction($route)
+    //Retorna um array multidimensional com todas as rotas da aplicação
+    public function getRoutes()
     {
         include_once __DIR__ . '/../../includes/Ninja/DatabaseConnection.php';
         include_once __DIR__ . '/../../includes/Project/ProjectConstants.php';
@@ -12,35 +13,63 @@ class RecursosRoutes
         //Conexão com o Banco de Dados
         $pdo = databaseConnection(DBNAME, DBUSER, DBPASSWORD);
 
+        //--------------    TABELAS     -----------------------------
         $recursosTabela = new \Ninja\DatabaseTable($pdo, DBTABLES[0], 'id');
         $autoresTabela = new \Ninja\DatabaseTable($pdo, DBTABLES[1], 'id');
 
-        //--------------INJEÇÃO     DE      DEPENDÊNCIAS--------------------
-        if ($route === 'recursos/lista') {
-            include_once __DIR__ . '/../classes/Project/RecursosController.php';
-            $recursosController = new RecursosController($recursosTabela, $autoresTabela);
-            $page = $recursosController->lista();
-        } elseif ($route === 'recursos/editar') {
-            include_once __DIR__ . '/../classes/Project/RecursosController.php';
-            $recursosController = new RecursosController($recursosTabela, $autoresTabela);
-            $page = $recursosController->editar();
-        }
-        elseif ($route === 'recursos/apagar') {
-            include_once __DIR__ . '/../classes/Project/RecursosController.php';
-            $recursosController = new RecursosController($recursosTabela, $autoresTabela);
-            $page = $recursosController->apagar();
-        }
-        elseif ($route === 'recursos/inicio') {
-            include_once __DIR__ . '/../classes/Project/RecursosController.php';
-            $recursosController = new RecursosController($recursosTabela, $autoresTabela);
-            $page = $recursosController->inicio();
-        }
-        elseif ($route === 'autores/adicionar') {
-            include_once __DIR__ . '/../classes/Project/AutoresController.php';
-            $autoresController = new AutoresController($autoresTabela);
-            $page = $autoresController->adicionar();
-        }
+        //--------------    CONTROLLERS    -----------------------------
+        $recursosController = new RecursosController($recursosTabela, $autoresTabela);
+        $autoresController = new AutoresController($autoresTabela);
 
-        return $page;
+        //--------------LISTA       DE      ROTAS---------------------------
+
+        $routes = [
+            'recursos/lista' => [
+                'GET' => [
+                    'controller' => $recursosController,
+                    'action' => 'lista'
+                ]
+            ],
+            'recursos/editar' => [
+                'GET' => [
+                    'controller' => $recursosController,
+                    'action' => 'editar'
+                ],
+                'POST' => [
+                    'controller' => $recursosController,
+                    'action' => 'salvar'
+                ]
+            ],
+            'recursos/apagar' => [
+                'POST' => [
+                    'controller' => $recursosController,
+                    'action' => 'apagar'
+                ]
+            ],
+            'recursos/inicio' => [
+                'GET' => [
+                    'controller' => $recursosController,
+                    'action' => 'inicio'
+                ]
+            ],
+            'autores/registrar' => [
+                'GET' => [
+                    'controller' => $autoresController,
+                    'action' => 'formularioRegistro'
+                ],
+                'POST' => [
+                    'controller' => $autoresController,
+                    'action' => 'registrarUsuario'
+                ]
+            ],
+            'autores/sucesso' => [
+                'GET' => [
+                    'controller' => $autoresController,
+                    'action' => 'sucessoRegistro'
+                ]
+            ]
+        ];
+
+        return $routes;
     }
 }

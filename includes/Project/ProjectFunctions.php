@@ -1,7 +1,7 @@
 <?php
 
 //Retorna todos os materiais de estudos
-function listarTodosRecursos(\Ninja\DatabaseTable $recursosTabela, \Ninja\DatabaseTable $autoresTabela)
+function listarTodosRecursos(Ninja\DatabaseTable $recursosTabela, Ninja\DatabaseTable $autoresTabela)
 {
     //É preciso inicializar a variável $recursos como um array vazio para o caso de
     //não existir nenhum recurso armazenado no banco de dados
@@ -12,7 +12,7 @@ function listarTodosRecursos(\Ninja\DatabaseTable $recursosTabela, \Ninja\Databa
 
     foreach ($resultadoBD as $row) {
         //Encontrar o nome do autor
-        $nomeAutor = $autoresTabela->readById($row['autor_id'])['nome'];
+        $nomeAutor = $autoresTabela->read('id', $row['autor_id'])['nome'];
 
         //Transformar a data vinda do banco de dados em um objeto DateTime
         $data = new DateTime($row['data']);
@@ -22,7 +22,7 @@ function listarTodosRecursos(\Ninja\DatabaseTable $recursosTabela, \Ninja\Databa
             'titulo' => $row['titulo'],
             'descricao' => $row['descricao'],
             'link' => $row['link'],
-            'data' => $data->format('d/m/Y'),   //Formato da data a ser enviada para o HTML
+            'data' => $data->format('d/m/Y h:i A'),   //Formato da data a ser enviada para o HTML
             'autorId' => $nomeAutor
         ];
     }

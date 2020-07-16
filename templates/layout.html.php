@@ -35,7 +35,7 @@
         </div>
     </nav>
 
-    <section class="section <?php if ($title == 'Início') echo 'is-medium' ?>">
+    <section class="section <?php if ($title == 'Início' || $title == 'Registro feito com sucesso') echo 'is-medium'; ?>">
         <div class="container">
             <!----------------  OUTPUT  ------------------>
             <?= $output ?>
@@ -54,7 +54,7 @@
                     <a class="icon has-text-dark" href="https://github.com/ismaelcostarc">
                         <ion-icon name="logo-github"></ion-icon>
                     </a>
-
+<!--
                     <a class="icon has-text-link" href="https://www.facebook.com/ismaelacostarc">
                         <ion-icon name="logo-facebook"></ion-icon>
                     </a>
@@ -66,7 +66,7 @@
                     <a class="icon has-text-info" href="https://twitter.com/ismaelcostarc">
                         <ion-icon name="logo-twitter"></ion-icon>
                     </a>
-
+-->
                     <a class="icon has-text-link" href="https://www.linkedin.com/in/ismaelcostarc/">
                         <ion-icon name="logo-linkedin"></ion-icon>
                     </a>

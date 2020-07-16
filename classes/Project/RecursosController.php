@@ -48,16 +48,49 @@ class RecursosController
         ];
     }
 
-    public function editar()
+    //A action salvar é chamada quando o verbo HTTP for POST
+    public function salvar()
     {
-        //Se existir uma requisição POST será executado um update no banco de dados, caso não
-        //haja, será exibido o formulário para editar o recurso
-        if (isset($_POST['recurso'])) {
-            $recurso = $_POST['recurso'];
+        $recurso = $_POST['recurso'];
+        $notifications = [];
+
+        //Validações do lado do servidor
+        //Verifica se o link já existe no banco de dados
+        if ($this->recursosTabela->read('link', '\'' . $recurso['link'] . '\'')) {
+            $notifications[] = 'linkExistente';
+        }
+        //Verifica se o link já está no formato correto
+        if (filter_var('\'' . $recurso['link'] . '\'', FILTER_VALIDATE_URL)) {
+            $notifications[] = 'linkFormatoIncorreto';
+        }
+
+        //Para validar campos vazios é mais seguro utilizar empty($campo)
+        //invés de $campo == ''
+        //Pois usuários maliciosos poderão tentar enviar requisições POST sem preencher o campo
+        //o que faria com que a variável não exista. Utilizando $campo == '' estamos verificando
+        //apenas se a variável possui uma string vazia. Com empty($campo) verificamos se a variável
+        //existe de fato
+        if (empty($recurso['titulo'])) {
+            $notifications[] = 'tituloVazio';
+        }
+        if (empty($recurso['link'])) {
+            $notifications[] = 'linkVazio';
+        }
+        if (empty($recurso['descricao'])) {
+            $notifications[] = 'descricaoVazio';
+        }
+
+        //Caso todos os dados estejam corretos já é possível inserir o recurso
+        if ($notifications == []) {
             //Será inserida uma nova data apenas se for para adicionar um recurso novo,
             //caso seja para atualizar será mantida a Data original
             if ($recurso['data'] == '') {
-                $recurso['data'] = new \DateTime();
+                //Configura o fuso horário a ser inserida no banco de dados.
+                //O padrão é UTC
+                $timeZone = new \DateTimeZone('America/Sao_Paulo');
+                $dateTime = new \DateTime();
+                $dateTime->setTimezone($timeZone);
+                $recurso['data'] = $dateTime;
             }
             $recurso['autor_id'] = 1;
 
@@ -65,35 +98,68 @@ class RecursosController
 
             header('Content-Type: text/html; charset=utf-8');
             header('Location: /recursos/lista');
-        } else {
-            //Caso seja para editar um material existente, será repassado o valor do id na query string
-            if (isset($_GET['id'])) {
-                //Variáveis que serão utilizadas nos templates
-                $title = 'Editar';
-                $isActive = '';
-                $titleIcon = 'edit';
-                $valorReset = 'Desfazer alterações';
-
-                $recurso = $this->recursosTabela->readById($_GET['id']);
-            } else {
-                //Variáveis que serão utilizadas nos templates
-                $title = 'Adicionar um Novo Material';
-                $isActive = 'adicionar';
-                $titleIcon = 'add';
-                $valorReset = 'Apagar';
-            }
-
-            return [
-                'title' => $title,
-                'template' => 'editar',
-                'isActive' => $isActive,
-                'titleIcon' => $titleIcon,
-                'variables' => [
-                    'valorReset' => $valorReset,
-                    'recurso' => $recurso ?? ''
-                ]
-            ];
         }
+
+        //Para verificar se a ação executada era de editar ou adicionar é só verificar se
+        //havia uma data já existente. Se já existe a variável $recurso['data'] logo estava sendo editado
+        //um recurso. Caso seja uma string vazia, estava sendo adicionado. Logo sabemos quais variáveis
+        //utilizar para os templates
+        if ($recurso['data'] == '') {
+            $title = 'Adicionar um Novo Material';
+            $isActive = 'adicionar';
+            $titleIcon = 'add';
+            $valorReset = 'Apagar';
+        } else {
+            //Variáveis que serão utilizadas nos templates
+            $title = 'Editar';
+            $isActive = '';
+            $titleIcon = 'edit';
+            $valorReset = 'Desfazer alterações';
+        }
+
+        return [
+            'title' => $title,
+            'template' => 'editar',
+            'isActive' => $isActive,
+            'titleIcon' => $titleIcon,
+            'variables' => [
+                'valorReset' => $valorReset,
+                'recurso' => $recurso,
+                'notifications' => $notifications
+            ]
+        ];
+    }
+
+    //A action editar é chamada quando o verbo HTTP for GET
+    public function editar()
+    {
+        //Caso seja para editar um material existente, será repassado o valor do id na query string
+        if (isset($_GET['id'])) {
+            //Variáveis que serão utilizadas nos templates
+            $title = 'Editar';
+            $isActive = '';
+            $titleIcon = 'edit';
+            $valorReset = 'Desfazer alterações';
+
+            $recurso = $this->recursosTabela->read('id', $_GET['id']);
+        } else {
+            //Variáveis que serão utilizadas nos templates
+            $title = 'Adicionar um Novo Material';
+            $isActive = 'adicionar';
+            $titleIcon = 'add';
+            $valorReset = 'Apagar';
+        }
+
+        return [
+            'title' => $title,
+            'template' => 'editar',
+            'isActive' => $isActive,
+            'titleIcon' => $titleIcon,
+            'variables' => [
+                'valorReset' => $valorReset,
+                'recurso' => $recurso ?? ''
+            ]
+        ];
     }
 
     function apagar()

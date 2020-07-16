@@ -6,6 +6,13 @@
     o recurso fique com a data do dia que foi atualizado, não do dia que foi inserido -->
     <input type="hidden" name="recurso[data]" value="<?= $recurso['data'] ?? '' ?>">
 
+    <?php
+    // NOTIFICATION tituloVazio
+    if (in_array('tituloVazio', $notifications)) {
+        echo '<div class="notification is-danger is-light">O título não pode estar vazio.</div>';
+    }
+    ?>
+
     <div class="field">
         <label class="label" for="recursoTitulo">Título</label>
         <div class="control">
@@ -13,12 +20,40 @@
         </div>
     </div>
 
+    <?php
+    // NOTIFICATION linkVazio
+    if (in_array('linkVazio', $notifications)) {
+        echo '<div class="notification is-danger is-light">O link não pode estar vazio.</div>';
+    }
+    ?>
+
+    <?php
+    // NOTIFICATION linkFormatoIncorreto
+    if (in_array('linkFormatoIncorreto', $notifications)) {
+        echo '<div class="notification is-danger is-light">O link está em um formato incorreto.</div>';
+    }
+    ?>
+
+    <?php
+    // NOTIFICATION linkExistente
+    if (in_array('linkExistente', $notifications)) {
+        echo '<div class="notification is-danger is-light">Este Link já foi adicionado.</div>';
+    }
+    ?>
+
     <div class="field">
         <label class="label" for="recursoLink">Link</label>
         <div class="control">
             <input type="url" class="input" name="recurso[link]" id="recursoLink" value="<?= $recurso['link'] ?? '' ?>" required>
         </div>
     </div>
+
+    <?php
+    // NOTIFICATION descricaoVazia
+    if (in_array('descricaoVazia', $notifications)) {
+        echo '<div class="notification is-danger is-light">A descrição não pode estar vazia.</div>';
+    }
+    ?>
 
     <div class="field">
         <label class="label" for="recursoDescricao">Descrição</label>
