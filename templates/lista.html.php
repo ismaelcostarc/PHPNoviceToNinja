@@ -27,7 +27,7 @@
         </h1>
 
         <h2 class="title is-6">
-            <?= h($recurso['autorId']) ?>
+            <?= h($recurso['nomeAutor']) ?>
         </h2>
         <h3 class="subtitle is-6">
             <?= h($recurso['data']) ?>
@@ -37,19 +37,21 @@
             <?= h($recurso['descricao']) ?>
         </div>
 
-        <div class="level">
-            <div class="level-left">
-                <div class="level-item">
-                    <a class="button" href="/recursos/editar&id=<?= $recurso['id'] ?>">Editar</a>
-                </div>
+        <?php if ($usuarioLogado == $recurso['idAutor']) : ?>
+            <div class="level">
+                <div class="level-left">
+                    <div class="level-item">
+                        <a class="button" href="/recursos/editar&id=<?= $recurso['id'] ?>">Editar</a>
+                    </div>
 
-                <div class="level-item">
-                    <form action="/recursos/apagar" method="POST">
-                        <input type="hidden" name="recursoId" value="<?= $recurso['id'] ?>">
-                        <input type="submit" class="button is-danger" value="Apagar">
-                    </form>
+                    <div class="level-item">
+                        <form action="/recursos/apagar" method="POST">
+                            <input type="hidden" name="recursoId" value="<?= $recurso['id'] ?>">
+                            <input type="submit" class="button is-danger" value="Apagar">
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        <?php endif; ?>
     </div>
 <?php endforeach; ?>

@@ -2,7 +2,7 @@
 
 namespace Project;
 
-class AutoresController
+class Autores
 {
     private $autoresTabela;
 
@@ -27,7 +27,8 @@ class AutoresController
             'title' => 'Registro feito com sucesso',
             'template' => 'sucesso',
             'isActive' => '',
-            'titleIcon' => 'success'
+            'titleIcon' => 'success',
+            'sizeSection' => 'is-medium'
         ];
     }
 
@@ -65,11 +66,13 @@ class AutoresController
         }
         if ($notifications == []) {
             $autor['senha'] = password_hash($autor['senha'], PASSWORD_DEFAULT);
+            //Mesmo que o usuário digite um email maiúsculo, ele irá totalmente minúsculo para o BD
+            $autor['email'] = strtolower($autor['email']);
 
             //Caso as entradas passem por todas as avaliações,
             //o autor é salvo no banco de dados
-            //$this->autoresTabela->save($autor);
-            
+            $this->autoresTabela->save($autor);
+
             header('Content-Type: text/html; charset=utf-8');
             header('Location: /autores/sucesso?usuario=' . $autor['nome']);
         }

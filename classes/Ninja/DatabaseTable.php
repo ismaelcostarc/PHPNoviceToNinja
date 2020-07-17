@@ -57,6 +57,8 @@ class DatabaseTable
     //Se o recurso já existir será lançada uma exceção.
     public function save($record)
     {
+        //Verificar se existe alguma data e formata
+        $record = $this->processDates($record);
         try {
             //Se for uma ação de adicionar um novo recurso, a chave primária que está na resposta HTTP
             //será uma string vazia, poré a chave primária informada deve
@@ -87,9 +89,6 @@ class DatabaseTable
         //$parameters é um array associativo que informa qual será o valor de cada variável
         //no comando SQL
         $parameters = [];
-
-        //Verificar se existe alguma data e formatar
-        $record = $this->processDates($record);
 
         foreach ($record as $column => $value) {
             $sql .= "`$column`,";
@@ -140,8 +139,14 @@ class DatabaseTable
     //Retorna um recurso específico de acordo com o nome da coluna
     public function read($column, $value)
     {
-        $sql = "SELECT * FROM `$this->table` WHERE `$column` = $value;";
-        $result = $this->query($sql);
+        // $sql = "SELECT * FROM `$this->table` WHERE `$column` = $value;";
+        $sql = "SELECT * FROM `$this->table` WHERE `$column` = :$column;";
+
+        $parameters = [
+            ':' . $column => $value
+        ];
+
+        $result = $this->query($sql, $parameters);
 
         return $result->fetch();
     }

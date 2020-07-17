@@ -1,4 +1,4 @@
-<h2 class="title is-4"><?= $title ?></h2>
+<h2 class="title is-4"><?= $title ?? 'Recursos Livres' ?></h2>
 
 <form method="POST" action="">
     <input type="hidden" name="recurso[id]" value="<?= $recurso['id'] ?? '' ?>">
@@ -6,12 +6,9 @@
     o recurso fique com a data do dia que foi atualizado, não do dia que foi inserido -->
     <input type="hidden" name="recurso[data]" value="<?= $recurso['data'] ?? '' ?>">
 
-    <?php
-    // NOTIFICATION tituloVazio
-    if (in_array('tituloVazio', $notifications)) {
-        echo '<div class="notification is-danger is-light">O título não pode estar vazio.</div>';
-    }
-    ?>
+    <?php if (isset($notifications) && in_array('tituloVazio', $notifications)) : ?>
+        <div class="notification is-danger is-light">O título não pode estar vazio.</div>
+    <?php endif; ?>
 
     <div class="field">
         <label class="label" for="recursoTitulo">Título</label>
@@ -20,26 +17,13 @@
         </div>
     </div>
 
-    <?php
-    // NOTIFICATION linkVazio
-    if (in_array('linkVazio', $notifications)) {
-        echo '<div class="notification is-danger is-light">O link não pode estar vazio.</div>';
-    }
-    ?>
+    <?php if (isset($notifications) && in_array('linkVazio', $notifications)) : ?>
+        <div class="notification is-danger is-light">O link não pode estar vazio.</div>
+    <?php endif; ?>
 
-    <?php
-    // NOTIFICATION linkFormatoIncorreto
-    if (in_array('linkFormatoIncorreto', $notifications)) {
-        echo '<div class="notification is-danger is-light">O link está em um formato incorreto.</div>';
-    }
-    ?>
-
-    <?php
-    // NOTIFICATION linkExistente
-    if (in_array('linkExistente', $notifications)) {
-        echo '<div class="notification is-danger is-light">Este Link já foi adicionado.</div>';
-    }
-    ?>
+    <?php if (isset($notifications) && in_array('linkExistente', $notifications)) : ?>
+        <div class="notification is-danger is-light">Este Link já foi adicionado.</div>
+    <?php endif; ?>
 
     <div class="field">
         <label class="label" for="recursoLink">Link</label>
@@ -48,12 +32,9 @@
         </div>
     </div>
 
-    <?php
-    // NOTIFICATION descricaoVazia
-    if (in_array('descricaoVazia', $notifications)) {
-        echo '<div class="notification is-danger is-light">A descrição não pode estar vazia.</div>';
-    }
-    ?>
+    <?php if (isset($notifications) && in_array('descricaoVazia', $notifications)) : ?>
+        <div class="notification is-danger is-light">A descrição não pode estar vazia.</div>
+    <?php endif; ?>
 
     <div class="field">
         <label class="label" for="recursoDescricao">Descrição</label>

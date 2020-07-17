@@ -28,14 +28,30 @@
 
         <div class="navbar-menu" id="navbarWebLivre">
             <div class="navbar-start">
-                <a class="navbar-item <?php if ($isActive == 'inicio') echo 'is-active' ?>" id="navbar-item-inicio" href="/">Início</a>
-                <a class="navbar-item <?php if ($isActive == 'lista') echo 'is-active' ?>" id="navbar-item-lista" href="/recursos/lista">Lista</a>
-                <a class="navbar-item <?php if ($isActive == 'adicionar') echo 'is-active' ?>" id="navbar-item-adicionar" href="/recursos/editar">Adicionar</a>
+                <a class="navbar-item <?php if (isset($isActive) && $isActive == 'inicio') echo 'is-active' ?>" id="navbar-item-inicio" href="/">Início</a>
+                <a class="navbar-item <?php if (isset($isActive) && $isActive == 'lista') echo 'is-active' ?>" id="navbar-item-lista" href="/recursos/lista">Lista</a>
+                <?php if (isset($isLoggedIn) && $isLoggedIn == true) : ?>
+                    <a class="navbar-item <?php if ($isActive == 'adicionar') echo 'is-active' ?>" id="navbar-item-adicionar" href="/recursos/editar">Adicionar</a>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <?php if (isset($isLoggedIn) && !$isLoggedIn) : ?>
+                    <div class="buttons">
+                        <a class="button is-success" href="/autores/registrar"><strong>Cadastrar</strong></a>
+                        <a class="button" href="/login/form">Entrar</a>
+                    </div>
+                <?php else : ?>
+                    <?= $nome ?? '' ?>
+                    <a class="button" href="/login/sair">Sair</a>
+                <?php endif; ?>
             </div>
         </div>
     </nav>
 
-    <section class="section <?php if ($title == 'Início' || $title == 'Registro feito com sucesso') echo 'is-medium'; ?>">
+    <section class="section <?= $sizeSection ?? '' ?>">
         <div class="container">
             <!----------------  OUTPUT  ------------------>
             <?= $output ?>
@@ -54,7 +70,7 @@
                     <a class="icon has-text-dark" href="https://github.com/ismaelcostarc">
                         <ion-icon name="logo-github"></ion-icon>
                     </a>
-<!--
+                    <!--
                     <a class="icon has-text-link" href="https://www.facebook.com/ismaelacostarc">
                         <ion-icon name="logo-facebook"></ion-icon>
                     </a>

@@ -2,15 +2,20 @@
 
 namespace Project;
 
-class RecursosController
+class Recursos
 {
     private $recursosTabela;
     private $autoresTabela;
+    private $authentication;
 
-    public function __construct(\Ninja\DatabaseTable $recursosTabela, \Ninja\DatabaseTable $autoresTabela)
-    {
+    public function __construct(
+        \Ninja\DatabaseTable $recursosTabela,
+        \Ninja\DatabaseTable $autoresTabela,
+        \Ninja\Authentication $authentication
+    ) {
         $this->recursosTabela = $recursosTabela;
         $this->autoresTabela = $autoresTabela;
+        $this->authentication = $authentication;
     }
 
     //Cada ação do controlador retornará o título de cada página,
@@ -24,7 +29,8 @@ class RecursosController
             'title' => 'Início',
             'template' => 'inicio',
             'isActive' => 'inicio',
-            'titleIcon' => 'home'
+            'titleIcon' => 'home',
+            'sizeSection' => 'is-medium'
         ];
     }
 
@@ -33,8 +39,10 @@ class RecursosController
         $numeroRecursos = $this->recursosTabela->quantity();
 
         include_once __DIR__ . '/../../includes/Project/ProjectFunctions.php';
-
+        
         $recursos = listarTodosRecursos($this->recursosTabela, $this->autoresTabela);
+        
+        $autor = $this->authentication->getUser();
 
         return [
             'title' => 'Lista',
@@ -43,7 +51,8 @@ class RecursosController
             'titleIcon' => 'list',
             'variables' => [
                 'numeroRecursos' => $numeroRecursos,
-                'recursos' => $recursos
+                'recursos' => $recursos,
+                'usuarioLogado' => $autor['id'] ?? null
             ]
         ];
     }
@@ -56,12 +65,8 @@ class RecursosController
 
         //Validações do lado do servidor
         //Verifica se o link já existe no banco de dados
-        if ($this->recursosTabela->read('link', '\'' . $recurso['link'] . '\'')) {
+        if ($this->recursosTabela->read('link', $recurso['link'])) {
             $notifications[] = 'linkExistente';
-        }
-        //Verifica se o link já está no formato correto
-        if (filter_var('\'' . $recurso['link'] . '\'', FILTER_VALIDATE_URL)) {
-            $notifications[] = 'linkFormatoIncorreto';
         }
 
         //Para validar campos vazios é mais seguro utilizar empty($campo)
@@ -92,7 +97,13 @@ class RecursosController
                 $dateTime->setTimezone($timeZone);
                 $recurso['data'] = $dateTime;
             }
-            $recurso['autor_id'] = 1;
+
+            //O usuário logado constará como autor do recurso
+            //O script irá verificar o email do usuário logado,
+            //buscar o autor na tabela de autores do banco de dados,
+            //e inserir o id do autor no novo recurso.
+            $autor = $this->authentication->getUser();
+            $recurso['autor_id'] = $autor['id'] ?? '';
 
             $this->recursosTabela->save($recurso);
 

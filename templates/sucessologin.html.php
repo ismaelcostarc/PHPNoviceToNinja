@@ -1,0 +1,1 @@
+<h2 class="title">Seja bem vindo(a) <?=$_GET['usuario'] ?? ''?>!</h2>

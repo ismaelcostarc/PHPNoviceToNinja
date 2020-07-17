@@ -6,9 +6,11 @@ try {
     $route = $_GET['route'] ?? 'recursos/inicio';
     $method = $_SERVER['REQUEST_METHOD'];
     $directoryLayout = __DIR__ . '/../templates/layout.html.php';
+    
+    $routes = new \Project\RecursosRoutes();
+    $entryPoint = new \Ninja\EntryPoint($route, $method, $routes);
 
-    $entryPoint = new Ninja\EntryPoint($route, $method, new Project\RecursosRoutes());
-    $page = $entryPoint->run($directoryLayout);
+    $page = $entryPoint->run($directoryLayout, '/login/erro');
 } catch (PDOException $e) {
     $title = 'Um erro ocorreu.';
     $titleIcon = 'warning';

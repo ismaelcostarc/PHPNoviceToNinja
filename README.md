@@ -744,3 +744,36 @@ session_destroy();
 ## Logging
 
 Para realizar o login de um usuário e manter ele, existem duas abordagens:
+
+1. Podemos logar o usuário utilizando uma variável de sessão como uma "*flag*" (Por exemplo, `$_SESSION['userId'] = $userId`). Nas próximas páginas da aplicação podemos checar se está variável de sessão existe e ler o ID do usuário a partir dela.
+2. Podemos armazenar tanto o e-mail quanto a senha de usuário na sessão. Quanto o cliente realizar novas requisições verificamos o e-mail e a senha e autenticamos novamente consultando o banco de dados.
+
+A primeira opção é mais leve, porém a segunda é mais segura, logo sendo preferível utilizar ela.
+
+>É uma boa prática autenticar novamente o usuário a cada página, pois se ele estiver acessando de dispositivos diferentes e modificar a senha ou o e-mail em um deles, o outro dispositivo já exigirá as novas credenciais.
+
+>Na variável de sessão não armazene a senha que o usuário digitou, mas a senha "hasheada" do banco de dados.
+
+## Session Fixation
+
+Após um login bem sucedido, o ID do cookie da sessão deve ser modificado. Isso evita que hackers roubem o ID de um usuário e tentem se passar por ele. Em PHP essa modificação é feita com a função nativa `session_regenerate_id()`, que deve ser chamada após um login bem sucedido.
+
+>Modificar o ID da sessão a cada vez que o usuário muda de página na aplicação aumentaria a segurança, porém possui diversas desvantagens. Por exemplo, se o usuário estiver com a aplicação aberta em múltiplas abas: se ele mudar de página em uma aba, se deslogaria de todas as outras. Por isso é recomendado modificar o ID da Sessão somente após o login.
+
+# Return Types
+
+É possível forçar o tipo de retorno de uma função ou método com o type hinting. É possível utilizar tanto tipos nativos quanto classes. Por exemplo:
+
+```PHP
+public function metodo() : int
+{
+    return 1;
+}
+
+public function funcao() : PDO
+{
+    return new PDO();
+}
+```
+
+>Se você utilizar *return type declarations* em interfaces, as classes que implementam essas interfaces também precisam declarar o tipo do retorno no cabeçalho.

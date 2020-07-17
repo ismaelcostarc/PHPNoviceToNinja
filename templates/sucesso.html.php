@@ -1,3 +1,3 @@
-<h2 class="title">Registro concluído com sucesso</h2>
+<h2 class="title">Seja bem vindo(a) <?=$_GET['usuario'] ?? ''?>!</h2>
 
-<p>Seja bem vindo(a) <?=$_GET['usuario'] ?? ''?>!</p>
+<p>Registro concluído com sucesso, por favor realize o primeiro login.</p>
