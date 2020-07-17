@@ -23,7 +23,6 @@ class Authentication
         //Mesmo se o usuário digitar o usuário em maiúsculo, será convertido para minúscula
         //para pesquisa no banco de dados
         $user = $this->usersTable->read($this->usernameColumn, strtolower($username));
-        var_dump($username);
         if (!empty($user) && password_verify($password, $user[$this->passwordColumn])) {
             //Prevenção contra o ataque Session Fixation
             session_regenerate_id();
@@ -59,6 +58,7 @@ class Authentication
         }
     }
 
+    //Devolve um array com os dados do usuário logado
     public function getUser()
     {
         if ($this->isLoggedIn()) {

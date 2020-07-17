@@ -22,7 +22,7 @@ function listarTodosRecursos(\Ninja\DatabaseTable $recursosTabela, \Ninja\Databa
             'titulo' => $row['titulo'],
             'descricao' => $row['descricao'],
             'link' => $row['link'],
-            'data' => $data->format('d/m/Y h:i A'),   //Formato da data a ser enviada para o HTML
+            'data' => $data->format('d/m/Y h:i'),   //Formato da data a ser enviada para o HTML
             'nomeAutor' => $autor['nome'] ?? '',
             'idAutor' => $autor['id'] ?? null
         ];

@@ -37,15 +37,31 @@
         </div>
 
         <div class="navbar-end">
+            <?php if (isset($nome)) : ?>
+                <div class="navbar-item">
+                    <?= $nome ?? '' ?>
+                </div>
+            <?php endif; ?>
+
             <div class="navbar-item">
                 <?php if (isset($isLoggedIn) && !$isLoggedIn) : ?>
                     <div class="buttons">
-                        <a class="button is-success" href="/autores/registrar"><strong>Cadastrar</strong></a>
-                        <a class="button" href="/login/form">Entrar</a>
+                        <a class="button is-success" href="/autores/registrar">
+                            <span class="icon"><ion-icon name="person-circle-outline"></ion-icon></span>
+                            <span><strong>Cadastrar</strong></span>
+                        </a>
+                        <a class="button" href="/login/form">
+                            <span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>
+                            <span>Entrar</span>
+                        </a>
                     </div>
                 <?php else : ?>
-                    <?= $nome ?? '' ?>
-                    <a class="button" href="/login/sair">Sair</a>
+                    <a class="button" href="/login/sair">
+                        <span class="icon">
+                            <ion-icon name="log-out-outline"></ion-icon>
+                        </span>
+                        <span>Sair</span>
+                    </a>
                 <?php endif; ?>
             </div>
         </div>

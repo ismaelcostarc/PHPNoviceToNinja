@@ -80,7 +80,7 @@ class Login
             } else {
                 $notifications[] = 'emailOuSenhaErrada';
             }
-        }
+        }   
 
         return [
             'title' => 'Login',

@@ -777,3 +777,5 @@ public function funcao() : PDO
 ```
 
 >Se você utilizar *return type declarations* em interfaces, as classes que implementam essas interfaces também precisam declarar o tipo do retorno no cabeçalho.
+
+# Administração do MySQL

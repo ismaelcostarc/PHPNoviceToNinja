@@ -19,10 +19,6 @@
         <div class="notification is-danger is-light">O email informado já está cadastrado.</div>
     <?php endif; ?>
 
-    <?php if (isset($notifications) && in_array('emailFormatoIncorreto', $notifications)) : ?>
-        <div class="notification is-danger is-light">O email informado não está no formato correto.</div>
-    <?php endif; ?>
-
     <?php if (isset($notifications) && in_array('emailVazio', $notifications)) : ?>
         <div class="notification is-danger is-light">O email não pode estar vazio.</div>
     <?php endif; ?>

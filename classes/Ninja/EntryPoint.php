@@ -65,6 +65,9 @@ class EntryPoint
         $authentication = $this->routes->getAuthentication();
         
         $isLoggedIn = $authentication->isLoggedIn();
+        if($isLoggedIn) {
+            $nome = $authentication->getUser()['nome'];
+        }
         
         //Se a action do controller necessitar que o usuário esteja logado,
         //é exibida uma página de erro

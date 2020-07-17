@@ -39,12 +39,8 @@ class Autores
 
         //Validação do lado do servidor
         //Verifica se o email já existe no banco de dados
-        if ($this->autoresTabela->read('email', '\'' . $autor['email'] . '\'')) {
+        if ($this->autoresTabela->read('email', $autor['email'])) {
             $notifications[] = 'emailExistente';
-        }
-        //Verifica se o email está no formato correto
-        if (filter_var('\'' . $autor['email'] . '\'', FILTER_VALIDATE_EMAIL)) {
-            $notifications[] = 'emailFormatoIncorreto';
         }
         //Para validar campos vazios é mais seguro utilizar empty($campo)
         //invés de $campo == ''
