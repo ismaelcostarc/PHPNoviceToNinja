@@ -1,6 +1,6 @@
 <?php
 
-namespace Project;
+namespace Project\Controller;
 
 class Recursos
 {
@@ -38,7 +38,7 @@ class Recursos
     {
         $numeroRecursos = $this->recursosTabela->quantity();
 
-        include_once __DIR__ . '/../../includes/Project/ProjectFunctions.php';
+        include_once __DIR__ . '/../../../includes/Project/ProjectFunctions.php';
         
         $recursos = listarTodosRecursos($this->recursosTabela, $this->autoresTabela);
         

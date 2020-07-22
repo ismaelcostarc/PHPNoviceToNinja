@@ -8,7 +8,9 @@ function listarTodosRecursos(\Ninja\DatabaseTable $recursosTabela, \Ninja\Databa
     $recursos = [];
 
     //$resultadoBD contém o array com todas as linhas da tabela de recursos
-    $resultadoBD = $recursosTabela->readAll();
+    //Os parâmetros (\PDO::FETCH_COLUMN, 0) servem para que os nomes das colunas não venham
+    //duplicados
+    $resultadoBD = $recursosTabela->readAll(\PDO::FETCH_COLUMN, 0);
 
     foreach ($resultadoBD as $row) {
         //Encontrar o nome do autor

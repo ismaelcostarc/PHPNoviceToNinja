@@ -762,7 +762,7 @@ Após um login bem sucedido, o ID do cookie da sessão deve ser modificado. Isso
 
 # Return Types
 
-É possível forçar o tipo de retorno de uma função ou método com o type hinting. É possível utilizar tanto tipos nativos quanto classes. Por exemplo:
+É possível forçar o tipo de retorno de uma função ou método com o *type hinting*. É possível utilizar tanto tipos nativos quanto classes. Por exemplo:
 
 ```PHP
 public function metodo() : int
@@ -779,3 +779,81 @@ public function funcao() : PDO
 >Se você utilizar *return type declarations* em interfaces, as classes que implementam essas interfaces também precisam declarar o tipo do retorno no cabeçalho.
 
 # Administração do MySQL
+
+## Backup
+
+É possível realizar backups no MySQL com a ferramenta **mysqlpump**. Insira o seguinte código no terminal:
+
+```
+mysqlpump -u username -ppassword databasename > databasename.sql
+```
+
+Para inserir a senha sem precisar "sair" da linha de comando, a senha é inserida junto com `-p`, sem espaços. Após o comando ser executado, todo o arquivo do banco de dados será transferido para databasename.sql. Caso ocorra algum problema no banco de dados, é necessário apenas fazer:
+
+```
+mysql -u username -ppassword databasename < databasename.sql
+```
+
+## Binary Logs
+
+O problema em utilizar somente backups é que eles são feitos de tempos em tempos. Logo se um erro ocorreu antes que um backup fosse realizado a tempo, todo os dados seriam perdidos. Para aplicações como e-commerces, que armazenam compras feitas por clientes, isso é inadmissível.  
+
+Para evitar esse problema existem os **binary logs** em MySQL. Com essa configuração é possível realizar um log de todas as consultas e operações feitas em um banco de dados. Logo se um problema ocorrer será necessário apenas restaurar o backup(feito com mysqlpump) e realizar novamente todas as operações armazenadas no log, feitas após o último backup.
+
+Por padrão o MySQL não armazena logs das suas operações. Para que isso seja feito é necessário indicar nas configurações descomentando as linhas `log_bin = /var/log/mysql/mysql-bin.log` e `server-id = 1` no `/etc/mysql/mysqld.conf.d/mysqld.conf` (linux). Após isso, os arquivos de logs serão armazenados nos diretórios especificados.
+
+>Se possível armazene os arquivos de log e backup em HDs diferentes do Banco de Dados em si. Pois se o problema acontecer no disco rígido onde está armazenado o banco de dados, os logs e backups estariam a salvo.
+
+Após ocorrer um *crash* no Banco de Dados o procedimento seria então utilizar o backup já feito anteriormente com o mysqlpump. Para converter os arquivos em formatos de log para comandos sql e executar eles no backup é possível utilizar a ferramenta **mysqlbinlog**.  
+
+O arquivo de backup é binlog.sql:
+```
+mysqlbinlog binlog.000001 > binlog.sql
+```
+
+Inserindo o arquivo de backup no banco de dados vazio:
+```
+mysql -u root -psenha < binlog.sql
+```
+
+## Chaves Estrangeiras
+
+No design de Banco de Dados, uma coluna que contém valores que se conectam com outros valores iguais de outra tabela é chamada de **chave estrangeira**. Por exemplo, uma tabela que contenha a lista de alunos conterá uma coluna representando o ID da turma que o aluno estuda (que será a chave estrangeira). No mesmo Banco de Dados haverá uma tabela com as turmas, e o ID dessa tabela estará conectado à chave estrangeira da tabela de alunos.
+
+Para garantir que as tabelas estejam realmente conectadas existem as **Restrições de Chave Estrangeira**. Para, por exemplo, o banco de dados impedir a exclusão de uma turma que ainda tenha alunos conectados a ela. Na linguagem SQL é feito da seguinte forma:
+
+```SQL
+CREATE TABLE `alunos` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nome` VARCHAR(255),
+    `turma` INT,
+    FOREIGN KEY (`turma`) REFERENCES `turmas` (`id`)
+) DEFAULT CHARACTER SET utf8mb4 ENGINE=InnoDB;
+```
+
+## Ação Referencial
+
+Invés de somente impedir que o programa exclua ou atualize registros que sejam chaves estrangeiras em outras tabelas, é possível escolher o comportamento com **ações referenciais**. Elas atuam sobre duas operações, **ON DELETE**, para operações de **DELETE**, e **ON UPDATE**, para ações de **UPDATE**. Existem diversas ações referenciais disponíveis, porém as mais comuns são **CASCADE**, **RESTRICT**, **SET NULL**, **NO ACTION** e **SET DEFAULT**. Por exemplo, para definirmos que se o registro de uma turma foi excluído, todos os alunos dessa turma fiquem com a coluna `turma` igual a `null` podemos fazer:
+
+```SQL
+CREATE TABLE `alunos` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nome` VARCHAR(255),
+    `turma` INT,
+    FOREIGN KEY (`turma`) REFERENCES `turmas` (`id`)
+    ON UPDATE SET NULL
+    ON DELETE SET NULL
+) DEFAULT CHARACTER SET utf8mb4 ENGINE=InnoDB;
+```
+
+>Ações referenciais podem ser bem úteis, porém geram um problema: a lógica da aplicação fica em mais de um lugar. Se quisermos deletar um registro precisamos nos preocupar tanto com o método que faz a exclusão do arquivo, quando com as restrições de chave estrangeira. Por isso é uma boa prática delegar somente ao PHP a tarefa de impedir exclusões de registros que interfiram em outras tabelas, e evitar o uso tanto de ações referenciais quanto de restrições de chave estrangeira.
+
+# ORM
+
+Muitas vezes o modo como olhamos os dados podem ser conflitantes entre si. Em um banco de dados que contenha alunos e turmas podemos visualizar os dados de forma **relacional**, como tabelas que se relacionam entre si com chaves primárias e estrangeiras. Porém também podemos visualizar de forma **Orientada a Objetos**, sendo a turma 1, por exemplo, um objeto da classe *Turmas*, e essa turma contém(**encapsula**) objetos *aluno* da classe *Alunos*.
+
+Algumas facilidades vindas do paradigma relacional, como `JOIN`, conflitam e até atrapalham a organização do código de forma orientada a objetos. Pois a Orientação a Objetos visualiza os dados de forma hierárquica. Para resolver esse problema o ideal é realizar a **separação de responsabilidades**. Uma forma de realizar isso é deixar as operações SQL o mais simples possíveis(Para apenas realizar operações básicas como Inserir, Deletar, Atualizar e Requisitar), e delegar a tarefa de organizar os dados para a linguagem orientada a objetos. Essa abordagem não é tão otimizada quanto realizar consultas SQL complexas, porém deixa o código mais organizado, escalável e testável.
+
+Uma classe que "esconde" do usuário as operações com o Banco de Dados, e mostra os dados no paradigma orientado a objetos é chamada **Object Relational Mapper** (**ORM**). *ORM*s lidam com *objetos*, não dados puros. Uma classe que representa no paradigma OO um registro no BD é chamada **Entity** (**Entidade**).
+
+>Dica: Para obter apenas as colunas de uma tabela no BD é possível apenas rodar o comando: `SELECT column_name FROM information_schema.columns WHERE table_name = 'nome_de_sua_tabela';`

@@ -76,6 +76,18 @@ class DatabaseTable
         }
     }
 
+    //Retorna um array com o nome das colunas da tabela
+    public function columns()
+    {
+        $sql = 'SELECT column_name FROM information_schema.columns WHERE table_name = \'' . $this->table .'\';';
+        
+        //Os parâmetros (\PDO::FETCH_COLUMN, 0) servem para que os nomes das colunas não venham
+        //duplicados
+        $result = $this->query($sql)->fetchAll(\PDO::FETCH_COLUMN, 0);
+
+        return $result;
+    }
+
     //--------------------------------------CRUD---------------------------------------------
     //Create
 

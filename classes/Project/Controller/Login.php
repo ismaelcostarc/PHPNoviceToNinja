@@ -1,8 +1,6 @@
 <?php
 
-namespace Project;
-
-use Ninja\DatabaseTable;
+namespace Project\Controller;
 
 class Login
 {

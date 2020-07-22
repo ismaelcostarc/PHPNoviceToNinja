@@ -18,6 +18,8 @@ class RecursosRoutes implements \Ninja\Routes
 
         //--------------    TABELAS     -----------------------------
         $this->recursosTabela = new \Ninja\DatabaseTable($pdo, DBTABLES[0], 'id');
+
+        $this->recursosTabela->columns();
         $this->autoresTabela = new \Ninja\DatabaseTable($pdo, DBTABLES[1], 'id');
 
         //-------------- Objeto de Autenticação
@@ -28,9 +30,9 @@ class RecursosRoutes implements \Ninja\Routes
     public function getRoutes(): array
     {
         //--------------    CONTROLLERS    -----------------------------
-        $recursosController = new Recursos($this->recursosTabela, $this->autoresTabela, $this->authentication);
-        $autoresController = new Autores($this->autoresTabela);
-        $loginController = new Login($this->autoresTabela, $this->authentication);
+        $recursosController = new \Project\Controller\Recursos($this->recursosTabela, $this->autoresTabela, $this->authentication);
+        $autoresController = new \Project\Controller\Autores($this->autoresTabela);
+        $loginController = new \Project\Controller\Login($this->autoresTabela, $this->authentication);
 
         //--------------LISTA       DE      ROTAS---------------------------
 

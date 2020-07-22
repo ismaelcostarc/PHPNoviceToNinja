@@ -1,6 +1,6 @@
 <?php
 
-namespace Project;
+namespace Project\Controller;
 
 class Autores
 {
