@@ -86,19 +86,7 @@
                     <a class="icon has-text-dark" href="https://github.com/ismaelcostarc">
                         <ion-icon name="logo-github"></ion-icon>
                     </a>
-                    <!--
-                    <a class="icon has-text-link" href="https://www.facebook.com/ismaelacostarc">
-                        <ion-icon name="logo-facebook"></ion-icon>
-                    </a>
 
-                    <a class="icon has-text-danger" href="https://www.instagram.com/ismaelcostarc/">
-                        <ion-icon name="logo-instagram"></ion-icon>
-                    </a>
-
-                    <a class="icon has-text-info" href="https://twitter.com/ismaelcostarc">
-                        <ion-icon name="logo-twitter"></ion-icon>
-                    </a>
--->
                     <a class="icon has-text-link" href="https://www.linkedin.com/in/ismaelcostarc/">
                         <ion-icon name="logo-linkedin"></ion-icon>
                     </a>

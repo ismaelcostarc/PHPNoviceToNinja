@@ -71,7 +71,7 @@ class Login
         ) {
             if ($this->authentication->login($autor['email'], $autor['senha'])) {
                 //A partir do email é possível descobrir o nome do usuário e exibi-lo
-                $nome = $this->autoresTabela->read('email', $autor['email'])['nome'];
+                $nome = $this->autoresTabela->read('email', $autor['email'])[0]['nome'];
 
                 header('Content-Type: text/html; charset=utf-8');
                 header('Location: /login/sucesso?usuario=' . $nome);

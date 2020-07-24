@@ -14,7 +14,7 @@ function listarTodosRecursos(\Ninja\DatabaseTable $recursosTabela, \Ninja\Databa
 
     foreach ($resultadoBD as $row) {
         //Encontrar o nome do autor
-        $autor = $autoresTabela->read('id', $row['autor_id']);
+        $autor = $autoresTabela->read('id', $row['autor_id'])[0];
 
         //Transformar a data vinda do banco de dados em um objeto DateTime
         $data = new DateTime($row['data']);

@@ -7,12 +7,26 @@ class DatabaseTable
     private $pdo;
     private $table;
     private $primaryKey;
+    private $entityName;
+    //Argumentos para a criação das Entidades
+    public $constructArgs;
 
-    public function __construct(\PDO $pdo, string $table, string $primaryKey)
-    {
+    public function __construct(
+        \PDO $pdo,
+        string $table,
+        string $primaryKey,
+        //stdClass é um classe vazia nativa do PHP, caso nenhuma Entidade
+        //seja especificada, o objeto retornado será o padrão
+        string $entityName = '\stdClass',
+        array $constructArgs = []
+    ) {
         $this->pdo = $pdo;
         $this->table = $table;
         $this->primaryKey = $primaryKey;
+        $this->entityName = $entityName;
+        //Caso a entidade relacionada ao recurso do banco de dados necessitar de 
+        //outras tabelas, essas serão informadas no parâmetro $constructorArgs
+        $this->constructArgs = $constructArgs;
     }
 
     //O método query realiza o tratamento adequado para evitar o ataque SQL Injection,
@@ -79,8 +93,8 @@ class DatabaseTable
     //Retorna um array com o nome das colunas da tabela
     public function columns()
     {
-        $sql = 'SELECT column_name FROM information_schema.columns WHERE table_name = \'' . $this->table .'\';';
-        
+        $sql = 'SELECT column_name FROM information_schema.columns WHERE table_name = \'' . $this->table . '\';';
+
         //Os parâmetros (\PDO::FETCH_COLUMN, 0) servem para que os nomes das colunas não venham
         //duplicados
         $result = $this->query($sql)->fetchAll(\PDO::FETCH_COLUMN, 0);
@@ -145,7 +159,7 @@ class DatabaseTable
         $sql = "SELECT * FROM `$this->table`;";
         $result = $this->query($sql);
 
-        return $result->fetchAll();
+        return $result->fetchAll(\PDO::FETCH_CLASS, $this->entityName, [$this]);
     }
 
     //Retorna um recurso específico de acordo com o nome da coluna
@@ -160,7 +174,7 @@ class DatabaseTable
 
         $result = $this->query($sql, $parameters);
 
-        return $result->fetch();
+        return $result->fetchAll(\PDO::FETCH_CLASS, $this->entityName, [$this]);
     }
 
     //Update

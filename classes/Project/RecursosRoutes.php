@@ -17,10 +17,21 @@ class RecursosRoutes implements \Ninja\Routes
         $pdo = databaseConnection(DBNAME, DBUSER, DBPASSWORD);
 
         //--------------    TABELAS     -----------------------------
-        $this->recursosTabela = new \Ninja\DatabaseTable($pdo, DBTABLES[0], 'id');
-
-        $this->recursosTabela->columns();
-        $this->autoresTabela = new \Ninja\DatabaseTable($pdo, DBTABLES[1], 'id');
+        $this->recursosTabela = new \Ninja\DatabaseTable(
+            $pdo,
+            DBTABLES[0],
+            'id',
+            '\Project\Entity\Recurso'
+        );
+        $this->autoresTabela = new \Ninja\DatabaseTable(
+            $pdo,
+            DBTABLES[1],
+            'id',
+            '\Project\Entity\Autor',
+            //Se a Entidade relacionado à tabela necessitar de outra tabela, 
+            //é possível passar ela como argumento em um array
+            [$this->recursosTabela]
+        );
 
         //-------------- Objeto de Autenticação
         $this->authentication = new \Ninja\Authentication($this->autoresTabela, 'email', 'senha');

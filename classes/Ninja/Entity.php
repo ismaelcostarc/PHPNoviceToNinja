@@ -4,11 +4,13 @@ namespace Ninja;
 
 class Entity
 {
-    private $table;
+    protected $table;
+    protected $constructArgs;
 
     public function __construct(DatabaseTable $table)
     {
         $this->table = $table;
+        $this->constructArgs = $this->table->constructArgs;
 
         //Ao criar qualquer Entidade, automaticamente o objeto terá como propriedades
         //as colunas da tabela dada

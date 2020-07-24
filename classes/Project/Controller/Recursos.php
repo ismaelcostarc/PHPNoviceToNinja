@@ -65,7 +65,7 @@ class Recursos
 
         //Validações do lado do servidor
         //Verifica se o link já existe no banco de dados
-        if ($this->recursosTabela->read('link', $recurso['link'])) {
+        if ($this->recursosTabela->read('link', $recurso['link'])[0]) {
             $notifications[] = 'linkExistente';
         }
 
@@ -152,7 +152,7 @@ class Recursos
             $titleIcon = 'edit';
             $valorReset = 'Desfazer alterações';
 
-            $recurso = $this->recursosTabela->read('id', $_GET['id']);
+            $recurso = $this->recursosTabela->read('id', $_GET['id'])[0];
         } else {
             //Variáveis que serão utilizadas nos templates
             $title = 'Adicionar um Novo Material';
