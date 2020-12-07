@@ -652,7 +652,7 @@ class {
     "autoload": {
         "psr-4": {
             "Alunos\\": "classes/Alunos",
-            "Project\\": "classes/Project"
+            "Project\\": "classes/Project",
             "Namespace\\": "caminho do namespace"
         }
     }
