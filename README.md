@@ -674,7 +674,7 @@ class {
  Interfaces contém somente o cabeçalho dos métodos, a implementação fica a cargo das classes:
 
  ```PHP
- class AlunosRoutes {
+ class AlunosRoutes implements Routes {
      public function getRoutes() {
          //Código
      }
