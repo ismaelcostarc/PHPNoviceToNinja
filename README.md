@@ -653,7 +653,7 @@ class {
         "psr-4": {
             "Alunos\\": "classes/Alunos",
             "Project\\": "classes/Project"
-            //"Namespace\\": "caminho do namespace"
+            "Namespace\\": "caminho do namespace"
         }
     }
 }
